@@ -1,0 +1,19 @@
+{
+    "name": "simple-puzzle",
+    "version": "1.0.0",
+    "description": "Simple puzzle game",
+    "main": "index.js",
+    "scripts": {},
+    "author": "Raclett3 <im@s283.net>",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "@types/node": "^12.7.2",
+        "@types/express": "^4.17.1",
+        "gulp": "^4.0.2",
+        "gulp-typescript": "^5.0.1",
+        "typescript": "^3.5.3"
+    }
+}
