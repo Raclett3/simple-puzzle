@@ -29,7 +29,7 @@ type Match = {
 const matches: {[key: string]: Match} = {};
 
 function newBoard(): Board {
-    return new Array(BoardHeight).map(() => new Array(BoardWidth).map(() => 0));
+    return Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
 }
 
 export function createMatch(matchId: string, name: string, hostCallback: Callback) : boolean {
@@ -157,7 +157,7 @@ export function removeBlock(matchId: string, host: boolean, emptyCount: number, 
                 const obstacle = matches[matchId].obstacle;
 
                 if (obstacle > 0) {
-                    const lines = new Array(obstacle).map(() => newLine(true));
+                    const lines = Array.from({length: obstacle}).map(() => newLine(true));
                     matches[matchId].guestBoard.concat(lines);
                     matches[matchId].guestBoard.splice(0, obstacle);
                     matches[matchId].guestCallback({
@@ -167,7 +167,7 @@ export function removeBlock(matchId: string, host: boolean, emptyCount: number, 
                 }
                 
                 if (obstacle < 0) {
-                    const lines = new Array(-obstacle).map(() => newLine(true));
+                    const lines = Array.from({length: -obstacle}).map(() => newLine(true));
                     matches[matchId].hostBoard.concat(lines);
                     matches[matchId].hostBoard.splice(0, -obstacle);
                     matches[matchId].hostCallback({
@@ -183,7 +183,7 @@ export function removeBlock(matchId: string, host: boolean, emptyCount: number, 
 }
 
 export function newLine(obstacle: boolean): number[] {
-    const line = new Array(8).map(() => 1);
+    const line = Array.from({length: BoardWidth}).map(() => 1);
     const position = Math.floor(Math.random() * BoardWidth);
     line[position] = 2;
     if (!obstacle) {
