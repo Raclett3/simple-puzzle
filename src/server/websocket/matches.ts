@@ -8,9 +8,12 @@ enum Status {
 
 type Board = number[][];
 
+type Callback = (message: GameMessage) => any;
+
 type Match = {
     status: Status,
-    callback: (message: GameMessage, toHost: boolean) => any,
+    hostCallback: Callback,
+    guestCallback: Callback | (() => any),
     hostBoard: Board,
     guestBoard: Board,
     obstacle: number,
@@ -25,14 +28,15 @@ function newBoard(): Board {
     return new Array(9).map(() => new Array(8).map(() => 0));
 }
 
-export function createMatch(matchId: string, callback: (message: GameMessage, toHost: boolean) => any): boolean {
+export function createMatch(matchId: string, hostCallback: Callback) : boolean {
     if (matchId in matches) {
         return false;
     }
 
     matches[matchId] = {
         status: Status.Waiting,
-        callback: callback,
+        hostCallback: hostCallback,
+        guestCallback: () => {},
         hostBoard: newBoard(),
         guestBoard: newBoard(),
         obstacle: 0,
@@ -54,7 +58,7 @@ export function newLine(obstacle: boolean): number[] {
     return line;
 }
 
-export function joinMatch(matchId: string): boolean {
+export function joinMatch(matchId: string, guestCallback: Callback): boolean {
     if (!(matchId in matches)) {
         return false;
     }
@@ -64,14 +68,15 @@ export function joinMatch(matchId: string): boolean {
     }
     
     matches[matchId].status = Status.Playing;
+    matches[matchId].guestCallback = guestCallback;
 
-    matches[matchId].callback({
+    matches[matchId].hostCallback({
         type: "START"
-    }, true);
+    });
 
-    matches[matchId].callback({
+    matches[matchId].guestCallback({
         type: "START"
-    }, false);
+    });
 
     const host = newLine(false);
     const guest = newLine(false);
@@ -79,15 +84,15 @@ export function joinMatch(matchId: string): boolean {
     matches[matchId].hostBoard[8] = host;
     matches[matchId].guestBoard[8] = guest;
 
-    matches[matchId].callback({
+    matches[matchId].hostCallback({
         type: "ADDITION",
         board: [host]
-    }, true);
+    });
 
-    matches[matchId].callback({
+    matches[matchId].guestCallback({
         type: "ADDITION",
         board: [guest]
-    }, false);
+    });
 
     return true;
 }
