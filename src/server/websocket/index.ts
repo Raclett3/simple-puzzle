@@ -1,7 +1,7 @@
 import * as ws from "ws"
 import GameMessage from "../../models/gameMessage"
 import {createHash} from "crypto"
-import {deleteMatch, createMatch, joinMatch, surrender} from "./matches"
+import {deleteMatch, createMatch, joinMatch, surrender, removeBlock} from "./matches"
 
 function md5(data: string): string {
     return createHash("md5").update(data).digest("hex");
@@ -62,6 +62,17 @@ export default function open(port: number) {
                         if (matchId && host) {
                             surrender(matchId, host);
                             matchId = null;
+                        }
+                        break;
+
+                    case "REMOVE":
+                        if (
+                            matchId
+                            && "x" in data
+                            && "y" in data
+                            && "emptyCount" in data
+                        ) {
+                            removeBlock(matchId, host, data.emptyCount, data.x, data.y);
                         }
                         break;
                 }

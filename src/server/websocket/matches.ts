@@ -89,6 +89,99 @@ export function surrender(matchId: string, host: boolean): boolean {
     return true;
 }
 
+export function removeBlock(matchId: string, host: boolean, emptyCount: number, positionX: number, positionY: number): boolean {
+    function removeSingleBlock(positionX: number, positionY: number): number {
+        if (
+            positionX >= BoardWidth
+            || positionX < 0
+            || positionY >= BoardHeight
+            || positionY < 0
+            || matches[matchId].hostBoard[positionY][positionX] === 0
+        ) {
+            return 0;
+        }
+
+        let total = 1;
+
+        const bomb = host ? 
+            matches[matchId].hostBoard[positionY][positionX] === 2 :
+            matches[matchId].guestBoard[positionY][positionX] === 2;
+
+        if (host) {
+            matches[matchId].hostBoard[positionY][positionX] = 0;
+        } else {
+            matches[matchId].guestBoard[positionY][positionX] = 0;
+        }
+
+        if (bomb) {
+            for (let y = -1; y <= 1; y++) {
+                for (let x = -1; x <= 1; x++) {
+                    total += removeSingleBlock(positionX + x, positionY + y);
+                }
+            }
+        }
+
+        return total;
+    }
+
+    if (!(matchId in matches)
+        ||matches[matchId].status !== Status.Playing
+        || positionX >= BoardWidth
+        || positionX < 0
+        || positionY >= BoardHeight
+        || positionY < 0
+    ) {
+        return false;
+    }
+
+    const actualEmpty = host ?
+        matches[matchId].hostBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0) :
+        matches[matchId].guestBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0)
+    
+    if (actualEmpty !== emptyCount) {
+        return false;
+    }
+
+    const score = removeSingleBlock(positionX, positionY);
+    const prev = matches[matchId].obstacle;
+    matches[matchId].obstacle += Math.floor((1 + score) * score / 2 / 50) * (host ? 1 : -1);
+
+    if (Math.sign(prev) !== Math.sign(matches[matchId].obstacle)) {
+        const timer = matches[matchId].obstacleTimer;
+        if (timer) {
+            clearTimeout(timer);
+        }
+
+        if (matches[matchId].obstacle !== 0) {
+            matches[matchId].obstacleTimer = setTimeout(() => {
+                const obstacle = matches[matchId].obstacle;
+
+                if (obstacle > 0) {
+                    const lines = new Array(obstacle).map(() => newLine(true));
+                    matches[matchId].guestBoard.concat(lines);
+                    matches[matchId].guestBoard.splice(0, obstacle);
+                    matches[matchId].guestCallback({
+                        type: "ADDITION",
+                        board: lines
+                    });
+                }
+                
+                if (obstacle < 0) {
+                    const lines = new Array(-obstacle).map(() => newLine(true));
+                    matches[matchId].hostBoard.concat(lines);
+                    matches[matchId].hostBoard.splice(0, -obstacle);
+                    matches[matchId].hostCallback({
+                        type: "ADDITION",
+                        board: lines
+                    });
+                }
+            }, 3000);
+        }
+    }
+
+    return true;
+}
+
 export function newLine(obstacle: boolean): number[] {
     const line = new Array(8).map(() => 1);
     const position = Math.floor(Math.random() * BoardWidth);
