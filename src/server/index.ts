@@ -6,4 +6,5 @@ import loadConfig from "./config"
     const config = await loadConfig(process.cwd() + "/config/config.json");
     await listen(config.port);
     open(config.websocketPort);
+    console.log("The server has started up.");
 })();
