@@ -67,6 +67,28 @@ export function deleteMatch(matchId: string) : boolean {
     return true;
 }
 
+export function surrender(matchId: string, host: boolean): boolean {
+    if (!(matchId in matches)) {
+        return false;
+    }
+
+    if (matches[matchId].status !== Status.Playing) {
+        return false;
+    }
+
+    matches[matchId].guestCallback({
+        type: host ? "WIN" : "LOSE"
+    });
+        
+    matches[matchId].hostCallback({
+        type: host ? "LOSE" : "WIN"
+    });
+
+    delete matches[matchId];
+
+    return true;
+}
+
 export function newLine(obstacle: boolean): number[] {
     const line = new Array(8).map(() => 1);
     const position = Math.floor(Math.random() * BoardWidth);

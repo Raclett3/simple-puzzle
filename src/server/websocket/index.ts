@@ -1,7 +1,7 @@
 import * as ws from "ws"
 import GameMessage from "../../models/gameMessage"
 import {createHash} from "crypto"
-import {deleteMatch, createMatch, joinMatch} from "./matches"
+import {deleteMatch, createMatch, joinMatch, surrender} from "./matches"
 
 function md5(data: string): string {
     return createHash("md5").update(data).digest("hex");
@@ -56,6 +56,13 @@ export default function open(port: number) {
                         matchId = data.matchId;
                         host = false;
                         joinMatch(data.matchId, callback);
+                        break;
+
+                    case "SURRENDER":
+                        if (matchId && host) {
+                            surrender(matchId, host);
+                            matchId = null;
+                        }
                         break;
                 }
             } catch(err) {
