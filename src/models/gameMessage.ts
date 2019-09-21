@@ -15,7 +15,7 @@ type GameMessage = {
     type: "DELETE"
 } | {
     type: "JOIN",
-    matchId: string
+    name: string
 } | {
     type: "MESSAGE",
     message: string

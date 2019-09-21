@@ -1,11 +1,6 @@
 import * as ws from "ws"
 import GameMessage from "../../models/gameMessage"
-import {createHash} from "crypto"
 import {deleteMatch, createMatch, joinMatch, surrender, removeBlock} from "./matches"
-
-function md5(data: string): string {
-    return createHash("md5").update(data).digest("hex");
-}
 
 export default function open(port: number) {
     const server = new ws.Server({port: port});
@@ -15,7 +10,7 @@ export default function open(port: number) {
             socket.send(JSON.stringify(data));
         }
 
-        let matchId: string | null = null;
+        let matchName: string | null = null;
         let host: boolean = false;
 
         socket.on("message", (raw) => {
@@ -34,45 +29,44 @@ export default function open(port: number) {
                         if (!("name" in data)) {
                             break;
                         }
-                        matchId = md5(String(Date.now()) + String(Math.random()));
                         host = true;
-                        createMatch(matchId, data.name, callback);
+                        createMatch(data.name, callback);
                         break;
 
                     case "DELETE":
-                        if (matchId && host) {
-                            deleteMatch(matchId);
-                            matchId = null;
+                        if (matchName && host) {
+                            deleteMatch(matchName);
+                            matchName = null;
                         }
                         break;
 
                     case "JOIN":
-                        if (!("matchId" in data)) {
+                        if (!("name" in data)) {
                             break;
                         }
-                        if (matchId && host) {
-                            deleteMatch(matchId);
+                        if (matchName && host) {
+                            deleteMatch(matchName);
                         }
-                        matchId = data.matchId;
+                        matchName = data.name;
                         host = false;
-                        joinMatch(data.matchId, callback);
+                        joinMatch(data.name, callback);
                         break;
 
                     case "SURRENDER":
-                        if (matchId && host) {
-                            surrender(matchId, host);
-                            matchId = null;
+                        if (matchName && host) {
+                            surrender(matchName, host);
+                            matchName = null;
                         }
                         break;
 
                     case "REMOVE":
                         if (
-                            matchId
+                            matchName
                             && "x" in data
                             && "y" in data
                             && "emptyCount" in data
                         ) {
-                            removeBlock(matchId, host, data.emptyCount, data.x, data.y);
+                            removeBlock(matchName, host, data.emptyCount, data.x, data.y);
                         }
                         break;
                 }
