@@ -1,7 +1,8 @@
 import * as fs from "fs"
 
 export type Config = {
-    port: number
+    port: number,
+    websocketPort: number
 };
 
 async function readFile(fileName: string) {
@@ -24,7 +25,8 @@ export default async function loadConfig(fileName: string): Promise<Config> {
         const settings: Config = JSON.parse(await readFile(fileName));
 
         if (
-            typeof settings.port === "number"
+            typeof settings.port === "number" &&
+            typeof settings.websocketPort === "number"
         ) {
             return settings;
         } else {
