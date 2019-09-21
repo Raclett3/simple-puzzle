@@ -185,7 +185,7 @@ export function newLine(obstacle: boolean): number[] {
     const position = Math.floor(Math.random() * BoardWidth);
     line[position] = 2;
     if (!obstacle) {
-        line[position + Math.floor(Math.random() * (BoardWidth) - 1) + 1] = 2;
+        line[(position + Math.floor(Math.random() * (BoardWidth) - 1) + 1) % BoardWidth] = 2;
     }
     return line;
 }
