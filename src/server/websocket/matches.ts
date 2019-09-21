@@ -76,10 +76,30 @@ export function newLine(obstacle: boolean): number[] {
 
 export function joinMatch(matchId: string, guestCallback: Callback): boolean {
     if (!(matchId in matches)) {
+        matches[matchId].hostCallback({
+            type: "MESSAGE",
+            message: "該当の対戦は存在しません。"
+        });
+        
+        matches[matchId].guestCallback({
+            type: "MESSAGE",
+            message: "該当の対戦は存在しません。"
+        });
+
         return false;
     }
 
     if (matches[matchId].status !== Status.Waiting) {
+        matches[matchId].hostCallback({
+            type: "MESSAGE",
+            message: "該当の対戦には参加できません。"
+        });
+        
+        matches[matchId].guestCallback({
+            type: "MESSAGE",
+            message: "該当の対戦には参加できません。"
+        });
+
         return false;
     }
     
