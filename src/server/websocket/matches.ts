@@ -87,6 +87,35 @@ export function surrender(matchName: string, host: boolean): boolean {
     return true;
 }
 
+function judge(matchName: string): boolean {
+    if (!(matchName in matches)) {
+        return false;
+    }
+
+    if (matches[matchName].status !== Status.Playing) {
+        return false;
+    }
+
+    const host = matches[matchName].hostBoard[0].reduce((prev, current) => prev || current, 0);
+    const guest = matches[matchName].guestBoard[0].reduce((prev, current) => prev || current, 0);
+    
+    if (host || guest) {
+        matches[matchName].guestCallback({
+            type: guest ? "LOSE" : "WIN"
+        });
+            
+        matches[matchName].hostCallback({
+            type: host ? "LOSE" : "WIN"
+        });
+
+        delete matches[matchName];
+
+        return true;
+    }
+
+    return false;
+}
+
 export function removeBlock(matchName: string, host: boolean, emptyCount: number, positionX: number, positionY: number): boolean {
     function removeSingleBlock(positionX: number, positionY: number): number {
         if (
@@ -144,6 +173,28 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
     const prev = matches[matchName].obstacle;
     matches[matchName].obstacle += Math.floor((1 + score) * score / 2 / 50) * (host ? 1 : -1);
 
+    const line = newLine(false);
+
+    if (host) {
+        matches[matchName].hostBoard.push(line);
+        matches[matchName].hostBoard.splice(0, 1);
+        matches[matchName].hostCallback({
+            type: "ADDITION",
+            board: [line]
+        });
+    } else {
+        matches[matchName].guestBoard.push(line);
+        matches[matchName].guestBoard.splice(0, 1);
+        matches[matchName].guestCallback({
+            type: "ADDITION",
+            board: [line]
+        });
+    }
+
+    if (judge(matchName)) {
+        return true;
+    }
+
     if (Math.sign(prev) !== Math.sign(matches[matchName].obstacle)) {
         const timer = matches[matchName].obstacleTimer;
         if (timer) {
@@ -173,6 +224,8 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
                         board: lines
                     });
                 }
+
+                judge(matchName);
             }, 3000);
         }
     }
