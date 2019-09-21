@@ -29,6 +29,7 @@ export default function open(port: number) {
                         if (!("name" in data)) {
                             break;
                         }
+                        matchName = data.name;
                         host = true;
                         createMatch(data.name, callback);
                         break;
