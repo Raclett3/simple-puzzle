@@ -6,6 +6,9 @@ enum Status {
     Ended = 3
 };
 
+const BoardHeight = 9;
+const BoardWidth = 8;
+
 type Board = number[][];
 
 type Callback = (message: GameMessage) => any;
@@ -26,7 +29,7 @@ type Match = {
 const matches: {[key: string]: Match} = {};
 
 function newBoard(): Board {
-    return new Array(9).map(() => new Array(8).map(() => 0));
+    return new Array(BoardHeight).map(() => new Array(BoardWidth).map(() => 0));
 }
 
 export function createMatch(matchId: string, name: string, hostCallback: Callback) : boolean {
@@ -43,8 +46,8 @@ export function createMatch(matchId: string, name: string, hostCallback: Callbac
         guestBoard: newBoard(),
         obstacle: 0,
         obstacleTimer: null,
-        width: 8,
-        height: 9
+        width: BoardWidth,
+        height: BoardHeight
     }
 
     return true;
@@ -66,10 +69,10 @@ export function deleteMatch(matchId: string) : boolean {
 
 export function newLine(obstacle: boolean): number[] {
     const line = new Array(8).map(() => 1);
-    const position = Math.floor(Math.random() * 8);
+    const position = Math.floor(Math.random() * BoardWidth);
     line[position] = 2;
     if (!obstacle) {
-        line[position + Math.floor(Math.random() * 7) + 1] = 2;
+        line[position + Math.floor(Math.random() * (BoardWidth) - 1) + 1] = 2;
     }
     return line;
 }
