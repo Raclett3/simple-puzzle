@@ -11,6 +11,7 @@ type Board = number[][];
 type Callback = (message: GameMessage) => any;
 
 type Match = {
+    name: string,
     status: Status,
     hostCallback: Callback,
     guestCallback: Callback | (() => any),
@@ -28,12 +29,13 @@ function newBoard(): Board {
     return new Array(9).map(() => new Array(8).map(() => 0));
 }
 
-export function createMatch(matchId: string, hostCallback: Callback) : boolean {
+export function createMatch(matchId: string, name: string, hostCallback: Callback) : boolean {
     if (matchId in matches) {
         return false;
     }
 
     matches[matchId] = {
+        name: name,
         status: Status.Waiting,
         hostCallback: hostCallback,
         guestCallback: () => {},
@@ -44,6 +46,20 @@ export function createMatch(matchId: string, hostCallback: Callback) : boolean {
         width: 8,
         height: 9
     }
+
+    return true;
+}
+
+export function deleteMatch(matchId: string) : boolean {
+    if (!(matchId in matches)) {
+        return false;
+    }
+
+    if (matches[matchId].status !== Status.Waiting) {
+        return false;
+    }
+
+    delete matches[matchId];
 
     return true;
 }

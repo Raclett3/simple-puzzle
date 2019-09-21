@@ -8,6 +8,17 @@ type GameMessage = {
     x: number,
     y: number,
     emptyCount: number
+} | {
+    type: "CREATE",
+    name: string
+} | {
+    type: "DELETE"
+} | {
+    type: "JOIN",
+    matchId: string
+} | {
+    type: "MESSAGE",
+    message: string
 };
 
 export default GameMessage;
