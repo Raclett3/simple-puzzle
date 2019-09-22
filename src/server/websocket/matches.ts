@@ -335,15 +335,17 @@ export function joinMatch(matchName: string, guestCallback: Callback): boolean {
     matches[matchName].hostBoard[8] = host;
     matches[matchName].guestBoard[8] = guest;
 
-    matches[matchName].hostCallback({
-        type: "ADDITION",
-        board: [host]
-    });
-
-    matches[matchName].guestCallback({
-        type: "ADDITION",
-        board: [guest]
-    });
+    setTimeout(function() {
+        matches[matchName].hostCallback({
+            type: "ADDITION",
+            board: [host]
+        });
+    
+        matches[matchName].guestCallback({
+            type: "ADDITION",
+            board: [guest]
+        });
+    }, 5000);
 
     return true;
 }

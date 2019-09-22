@@ -64,6 +64,25 @@ export function waiting(name: string) {
     lobby.appendChild(cancel);
 }
 
+export function countDown(count: number) {
+    remove();
+
+    const title = document.createElement("div");
+    
+    title.textContent = String(count);
+    title.setAttribute("class", "title");
+    
+    lobby.appendChild(title);
+
+    setTimeout(function() {
+        if (count > 1) {
+            countDown(count - 1);
+        } else {
+            remove();
+        }
+    }, 1000);
+}
+
 export function result(message: string) {
     remove();
 
