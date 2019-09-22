@@ -1,4 +1,4 @@
-import GameMessage from "../models/gameMessage"
+import GameMessage from "../../models/gameMessage"
 
 const url = new URL(location.href);
 const protocol = url.protocol === "https:" ? "wss" : "ws"
