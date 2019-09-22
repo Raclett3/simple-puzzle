@@ -28,7 +28,7 @@ function mousedown(event: MouseEvent) {
 
     const positionX = Math.floor(event.offsetX / blockSize);
     const positionY = Math.floor(event.offsetY / blockSize);
-    const emptyCount = board.reduce((prev, current) => current[positionX] !== Block.Void ? prev + 1 : prev, 0)
+    const emptyCount = board.reduce((prev, current) => current[positionX] === Block.Void ? prev + 1 : prev, 0)
 
     send({
         type: "REMOVE",
