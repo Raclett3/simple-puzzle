@@ -15,8 +15,13 @@ export function resize() {
         blockSize = Math.floor(clientHeight / BoardHeight);
     }
 
-    game.setAttribute("height", String(blockSize * BoardHeight));
-    game.setAttribute("width", String(blockSize * BoardWidth));
+    const height = blockSize * BoardHeight;
+    const width = blockSize * BoardWidth;
+
+    game.setAttribute("height", String(height));
+    game.setAttribute("width", String(width));
+
+    wrapper.setAttribute("style", `height: ${height}px; width: ${width}px;`)
 }
 
 export function init() {
