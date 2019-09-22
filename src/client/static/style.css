@@ -11,6 +11,41 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
+input[type="text"], input[type="password"] {
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #FFF;
+    padding: 5px;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    color: #FFF;
+    font-size: 100%;
+    width: calc(100% - 10px);
+}
+
+input[type="button"] {
+    border-radius: 3px;
+    background-color: #666;
+    color: #fff;
+    font-weight: bold;
+    -webkit-box-sizing: content-box;
+    -webkit-appearance: button;
+    appearance: button;
+    border: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    width: calc(100% - 10px);
+    padding: 10px 0;
+    margin: 5px;
+    transition-duration: 0.2s;
+}
+
+input[type="button"]:hover {
+    background-color: #333;
+}
+
 .wrapper {
     position: absolute;
     top: 50%;
@@ -18,4 +53,16 @@ canvas {
     transform: translate(-50%, -50%);
     height: 100%;
     width: 100%;
+}
+
+.lobby {
+    position: relative;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    translate: translateY(-50%);
+}
+
+.invisible {
+    display: none;
 }
