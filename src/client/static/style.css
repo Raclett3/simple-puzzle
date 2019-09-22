@@ -61,7 +61,7 @@ input[type="button"]:hover {
     top: 50%;
     left: 0;
     width: 100%;
-    translate: translateY(-50%);
+    transform: translateY(-50%);
 }
 
 .invisible {
