@@ -19,11 +19,3 @@ export function init() {
     lobby.appendChild(join);
     wrapper.appendChild(lobby);
 }
-
-export function show() {
-    lobby.setAttribute("class", "lobby");
-}
-
-export function hide() {
-    lobby.setAttribute("class", "lobby invisible");
-}
