@@ -57,7 +57,7 @@ export default function open(port: number) {
                         break;
 
                     case "SURRENDER":
-                        if (matchName && host) {
+                        if (matchName) {
                             surrender(matchName, host);
                             matchName = null;
                         }
@@ -78,6 +78,13 @@ export default function open(port: number) {
                 if (!(err instanceof SyntaxError)) {
                     throw err;
                 }
+            }
+        });
+
+        socket.on("close", () => {
+            if (matchName) {
+                deleteMatch(matchName);
+                surrender(matchName, host);
             }
         });
     });
