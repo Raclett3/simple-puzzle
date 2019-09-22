@@ -124,6 +124,12 @@ function judge(matchName: string): boolean {
             type: host ? "LOSE" : "WIN"
         });
 
+        const timer = matches[matchName].obstacleTimer;
+    
+        if (timer) {
+            clearTimeout(timer);
+        }
+
         delete matches[matchName];
 
         return true;
