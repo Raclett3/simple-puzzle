@@ -1,11 +1,9 @@
-import {wrapper} from "./index"
+import {wrapper, BoardHeight, BoardWidth} from "./index"
 import Block from "../../models/block"
 
-let blockSize = 0;
+export let blockSize = 0;
 const game = document.createElement("canvas");
 const context = game.getContext("2d")!;
-const BoardHeight = 9;
-const BoardWidth = 8;
 
 export function resize() {
     const clientHeight = wrapper.clientHeight;
@@ -28,19 +26,20 @@ export function resize() {
 
 export function init() {
     wrapper.appendChild(game);
-    context.strokeStyle = "#FFF";
     context.lineWidth = 2;
     resize();
 }
 
-export function draw(x: number, y: number, block: Block) {
+export function drawBlock(x: number, y: number, block: Block, alpha: number) {
+    context.strokeStyle = "rgba(255, 255, 255, " + String(Math.min(1, alpha)) + ")";
+
     if (block === Block.Block) {
-        context.strokeRect(x, y, blockSize, blockSize);
+        context.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
     }
 
     if (block === Block.Bomb) {
         context.beginPath();
-        context.arc(x, y, blockSize / 2, 0, Math.PI * 2);
+        context.arc(x * blockSize + blockSize / 2, y * blockSize + blockSize / 2, blockSize / 2, 0, Math.PI * 2);
         context.stroke();
     }
 }
