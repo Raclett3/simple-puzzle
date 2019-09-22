@@ -116,6 +116,18 @@ function judge(matchName: string): boolean {
     return false;
 }
 
+function fall(board: number[][]) {
+    const rotated = board[0].map((_, key) => board.map(row => row[key]).reverse());
+    const gravitated = rotated.map((row) => row.filter(value => value !== 0))
+                                .map((row) => {
+                                    const length = row.length;
+                                    row.length = BoardHeight;
+                                    row.fill(0, length, BoardHeight);
+                                    return row;
+                                });
+    return gravitated[0].map((_, key) => gravitated.map(row => row[key])).reverse();
+}
+
 export function removeBlock(matchName: string, host: boolean, emptyCount: number, positionX: number, positionY: number): boolean {
     function removeSingleBlock(positionX: number, positionY: number): number {
         if (
@@ -182,6 +194,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             type: "ADDITION",
             board: [line]
         });
+        matches[matchName].hostBoard = fall(matches[matchName].hostBoard);
     } else {
         matches[matchName].guestBoard.push(line);
         matches[matchName].guestBoard.splice(0, 1);
@@ -189,6 +202,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             type: "ADDITION",
             board: [line]
         });
+        matches[matchName].guestBoard = fall(matches[matchName].guestBoard);
     }
 
     if (judge(matchName)) {
