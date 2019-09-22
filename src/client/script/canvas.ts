@@ -1,7 +1,9 @@
 import {wrapper} from "./index"
+import Block from "../../models/block"
 
 let blockSize = 0;
 const game = document.createElement("canvas");
+const context = game.getContext("2d")!;
 const BoardHeight = 9;
 const BoardWidth = 8;
 
@@ -26,5 +28,23 @@ export function resize() {
 
 export function init() {
     wrapper.appendChild(game);
+    context.strokeStyle = "#FFF";
+    context.lineWidth = 2;
     resize();
+}
+
+export function draw(x: number, y: number, block: Block) {
+    if (block === Block.Block) {
+        context.strokeRect(x, y, blockSize, blockSize);
+    }
+
+    if (block === Block.Bomb) {
+        context.beginPath();
+        context.arc(x, y, blockSize / 2, 0, Math.PI * 2);
+        context.stroke();
+    }
+}
+
+export function clear() {
+    context.clearRect(0, 0, blockSize * BoardWidth, blockSize * BoardHeight);
 }
