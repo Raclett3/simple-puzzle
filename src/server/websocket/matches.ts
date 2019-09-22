@@ -92,6 +92,12 @@ export function surrender(matchName: string, host: boolean): boolean {
         type: host ? "LOSE" : "WIN"
     });
 
+    const timer = matches[matchName].obstacleTimer;
+
+    if (timer) {
+        clearTimeout(timer);
+    }
+
     delete matches[matchName];
 
     return true;
@@ -241,7 +247,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             matches[matchName].obstacleTimer = setTimeout(() => {
                 const obstacle = matches[matchName].obstacle;
 
-                if (obstacle > 0) {
+                if (obstacle < 0) {
                     const lines = Array.from({length: obstacle}).map(() => newLine(true));
                     matches[matchName].guestBoard.push(...lines);
                     matches[matchName].guestBoard.splice(0, obstacle);
@@ -251,7 +257,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
                     });
                 }
                 
-                if (obstacle < 0) {
+                if (obstacle > 0) {
                     const lines = Array.from({length: -obstacle}).map(() => newLine(true));
                     matches[matchName].hostBoard.push(...lines);
                     matches[matchName].hostBoard.splice(0, -obstacle);
@@ -274,7 +280,7 @@ export function newLine(obstacle: boolean): Block[] {
     const position = Math.floor(Math.random() * BoardWidth);
     line[position] = Block.Bomb;
     if (!obstacle) {
-        line[(position + Math.floor(Math.random() * (BoardWidth) - 1) + 1) % BoardWidth] = Block.Bomb;
+        line[(position + Math.floor(Math.random() * (BoardWidth - 1)) + 1) % BoardWidth] = Block.Bomb;
     }
     return line;
 }
