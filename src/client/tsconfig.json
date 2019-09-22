@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "system",
+        "module": "es6",
         "target": "es5",
         "sourceMap": true,
         "types": ["node"],
