@@ -221,7 +221,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
 
                 if (obstacle > 0) {
                     const lines = Array.from({length: obstacle}).map(() => newLine(true));
-                    matches[matchName].guestBoard.concat(lines);
+                    matches[matchName].guestBoard.push(...lines);
                     matches[matchName].guestBoard.splice(0, obstacle);
                     matches[matchName].guestCallback({
                         type: "ADDITION",
@@ -231,7 +231,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
                 
                 if (obstacle < 0) {
                     const lines = Array.from({length: -obstacle}).map(() => newLine(true));
-                    matches[matchName].hostBoard.concat(lines);
+                    matches[matchName].hostBoard.push(...lines);
                     matches[matchName].hostBoard.splice(0, -obstacle);
                     matches[matchName].hostCallback({
                         type: "ADDITION",
