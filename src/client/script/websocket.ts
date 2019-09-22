@@ -1,6 +1,6 @@
 import GameMessage from "../../models/gameMessage"
 import {init as initGame, remove, addLines} from "./game"
-import {waiting} from "./lobby";
+import {waiting, result} from "./lobby";
 
 const url = new URL(location.href);
 const protocol = url.protocol === "https:" ? "wss" : "ws"
@@ -37,6 +37,11 @@ export function init() {
 
                 case "CREATE":
                     waiting(data.name);
+                    break;
+                
+                case "WIN":
+                case "LOSE":
+                    result(data.type);
                     break;
             }
         }

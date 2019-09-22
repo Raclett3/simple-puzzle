@@ -64,6 +64,24 @@ export function waiting(name: string) {
     lobby.appendChild(cancel);
 }
 
+export function result(message: string) {
+    remove();
+
+    const title = document.createElement("div");
+    
+    title.textContent = message;
+    title.setAttribute("class", "title");
+
+    
+    lobby.appendChild(title);
+
+    setTimeout(function() {
+        wrapper.addEventListener("click", function() {
+            matching();
+        });
+    }, 1000);
+}
+
 export function remove() {
     while (lobby.firstChild) {
         lobby.removeChild(lobby.firstChild);

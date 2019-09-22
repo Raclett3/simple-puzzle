@@ -232,9 +232,3 @@ export function init() {
     removeLobby();
     board = Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
 }
-
-export function end(message: string) {
-    wrapper.appendChild(document.createTextNode(message));
-
-    wrapper.removeEventListener("mousedown", mousedown);
-}
