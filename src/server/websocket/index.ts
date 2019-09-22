@@ -32,9 +32,10 @@ export default function open(port: number) {
                         if (matchName && host) {
                             deleteMatch(matchName);
                         }
-                        matchName = data.name;
-                        host = true;
-                        createMatch(data.name, callback);
+                        if (createMatch(data.name, callback)) {
+                            matchName = data.name;
+                            host = true;
+                        }
                         break;
 
                     case "DELETE":
