@@ -35,8 +35,8 @@ function newBoard(): Board {
 export function createMatch(matchName: string, hostCallback: Callback) : boolean {
     if (matchName in matches) {
         hostCallback({
-            type: "CREATE",
-            name: matchName
+            type: "MESSAGE",
+            message: "ルームの作成に失敗しました。"
         });
         return false;
     }
@@ -54,8 +54,8 @@ export function createMatch(matchName: string, hostCallback: Callback) : boolean
     }
 
     hostCallback({
-        type: "MESSAGE",
-        message: "ルームの作成に失敗しました。"
+        type: "CREATE",
+        name: matchName
     });
 
     return true;
