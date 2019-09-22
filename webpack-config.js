@@ -1,6 +1,6 @@
 module.exports = {
     mode: "production",
-    entry: "./src/client/index.ts",
+    entry: "./src/client/script/index.ts",
     output: {
         filename: "index.js"
     },
