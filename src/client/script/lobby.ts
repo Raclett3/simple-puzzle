@@ -1,9 +1,9 @@
 import {wrapper} from "./index"
 
-const lobby = document.createElement("div");
-const matchName = document.createElement("input");
+export const lobby = document.createElement("div");
 
 export function init() {
+    const matchName = document.createElement("input");
     const create = document.createElement("input");
     const join = document.createElement("input");
 
