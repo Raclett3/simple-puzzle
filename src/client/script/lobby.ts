@@ -75,11 +75,7 @@ export function result(message: string) {
     
     lobby.appendChild(title);
 
-    setTimeout(function() {
-        wrapper.addEventListener("click", function() {
-            matching();
-        });
-    }, 1000);
+    setTimeout(matching, 3000);
 }
 
 export function remove() {
