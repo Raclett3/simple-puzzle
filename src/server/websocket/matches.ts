@@ -336,6 +336,10 @@ export function joinMatch(matchName: string, guestCallback: Callback): boolean {
     matches[matchName].guestBoard[8] = guest;
 
     setTimeout(function() {
+        if (!(matchName in matches)) {
+            return;
+        }
+        
         matches[matchName].hostCallback({
             type: "ADDITION",
             board: [host]
