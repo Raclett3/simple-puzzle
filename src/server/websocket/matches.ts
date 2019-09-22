@@ -1,4 +1,5 @@
 import GameMessage from "../../models/gameMessage"
+import Block from "../../models/block"
 
 enum Status {
     Waiting = 1,
@@ -9,7 +10,7 @@ enum Status {
 const BoardHeight = 9;
 const BoardWidth = 8;
 
-type Board = number[][];
+type Board = Block[][];
 
 type Callback = (message: GameMessage) => any;
 
@@ -116,7 +117,7 @@ function judge(matchName: string): boolean {
     return false;
 }
 
-function fall(board: number[][]) {
+function fall(board: Board) {
     const rotated = board[0].map((_, key) => board.map(row => row[key]).reverse());
     const gravitated = rotated.map((row) => row.filter(value => value !== 0))
                                 .map((row) => {
@@ -143,13 +144,13 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
         let total = 1;
 
         const bomb = host ? 
-            matches[matchName].hostBoard[positionY][positionX] === 2 :
-            matches[matchName].guestBoard[positionY][positionX] === 2;
+            matches[matchName].hostBoard[positionY][positionX] === Block.Bomb :
+            matches[matchName].guestBoard[positionY][positionX] === Block.Bomb;
 
         if (host) {
-            matches[matchName].hostBoard[positionY][positionX] = 0;
+            matches[matchName].hostBoard[positionY][positionX] = Block.Void;
         } else {
-            matches[matchName].guestBoard[positionY][positionX] = 0;
+            matches[matchName].guestBoard[positionY][positionX] = Block.Void;
         }
 
         if (bomb) {
@@ -247,12 +248,12 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
     return true;
 }
 
-export function newLine(obstacle: boolean): number[] {
-    const line = Array.from({length: BoardWidth}).map(() => 1);
+export function newLine(obstacle: boolean): Block[] {
+    const line = Array.from({length: BoardWidth}).map(() => Block.Block);
     const position = Math.floor(Math.random() * BoardWidth);
-    line[position] = 2;
+    line[position] = Block.Bomb;
     if (!obstacle) {
-        line[(position + Math.floor(Math.random() * (BoardWidth) - 1) + 1) % BoardWidth] = 2;
+        line[(position + Math.floor(Math.random() * (BoardWidth) - 1) + 1) % BoardWidth] = Block.Bomb;
     }
     return line;
 }
