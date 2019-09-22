@@ -5,14 +5,16 @@ const webpackStream = require("webpack-stream");
 const webpackConfig = require("./webpack-config");
 
 gulp.task("build-server", function(done) {
-    gulp.src(["./src/server/**/*.ts", "./src/models/**/*.ts"])
-        .pipe(typescript({outDir: "./build/server"}))
+    const project = typescript.createProject("./src/tsconfig.json");
+    project.src()
+           .pipe(project())
+           .pipe(gulp.dest("./build"))
     done();
 });
 
 gulp.task("build-client", function(done) {
     webpackStream(webpackConfig, webpack)
-        .pipe(gulp.dest("./build/client"));;
+        .pipe(gulp.dest("./build/client"));
     gulp.src(["./src/client/static/*"])
         .pipe(gulp.dest("./build/client"));
     done();
