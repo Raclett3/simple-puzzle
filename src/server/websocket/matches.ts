@@ -192,6 +192,12 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
         matches[matchName].hostBoard.push(line);
         matches[matchName].hostBoard.splice(0, 1);
         matches[matchName].hostCallback({
+            type: "REMOVE",
+            x: positionX,
+            y: positionY,
+            emptyCount: emptyCount
+        });
+        matches[matchName].hostCallback({
             type: "ADDITION",
             board: [line]
         });
@@ -199,6 +205,12 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
     } else {
         matches[matchName].guestBoard.push(line);
         matches[matchName].guestBoard.splice(0, 1);
+        matches[matchName].guestCallback({
+            type: "REMOVE",
+            x: positionX,
+            y: positionY,
+            emptyCount: emptyCount
+        });
         matches[matchName].guestCallback({
             type: "ADDITION",
             board: [line]
