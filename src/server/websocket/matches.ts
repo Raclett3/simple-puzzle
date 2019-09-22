@@ -151,7 +151,8 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             || positionX < 0
             || positionY >= BoardHeight
             || positionY < 0
-            || matches[matchName].hostBoard[positionY][positionX] === 0
+            || (matches[matchName].hostBoard[positionY][positionX] === 0 && host)
+            || (matches[matchName].guestBoard[positionY][positionX] === 0 && !host)
         ) {
             return 0;
         }
@@ -199,7 +200,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
 
     const score = removeSingleBlock(positionX, positionY);
     const prev = matches[matchName].obstacle;
-    matches[matchName].obstacle += Math.floor((1 + score) * score / 2 / 50) * (host ? 1 : -1);
+    matches[matchName].obstacle += ((1 + score) * score / 2 / 50) * (host ? 1 : -1);
 
     const line = newLine(false);
 
@@ -237,39 +238,46 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
         return true;
     }
 
-    if (Math.sign(prev) !== Math.sign(matches[matchName].obstacle)) {
+    const obstacle = matches[matchName].obstacle;
+
+    if (
+        Math.abs(obstacle) >= 1
+        && (
+            Math.sign(prev) !== Math.sign(obstacle)
+            || Math.abs(prev) < 1)
+    ) {
         const timer = matches[matchName].obstacleTimer;
         if (timer) {
             clearTimeout(timer);
         }
 
-        if (matches[matchName].obstacle !== 0) {
-            matches[matchName].obstacleTimer = setTimeout(() => {
-                const obstacle = matches[matchName].obstacle;
+        matches[matchName].obstacleTimer = setTimeout(() => {
+            const obstacle = matches[matchName].obstacle;
 
-                if (obstacle < 0) {
-                    const lines = Array.from({length: obstacle}).map(() => newLine(true));
-                    matches[matchName].guestBoard.push(...lines);
-                    matches[matchName].guestBoard.splice(0, obstacle);
-                    matches[matchName].guestCallback({
-                        type: "ADDITION",
-                        board: lines
-                    });
-                }
-                
-                if (obstacle > 0) {
-                    const lines = Array.from({length: -obstacle}).map(() => newLine(true));
-                    matches[matchName].hostBoard.push(...lines);
-                    matches[matchName].hostBoard.splice(0, -obstacle);
-                    matches[matchName].hostCallback({
-                        type: "ADDITION",
-                        board: lines
-                    });
-                }
+            if (obstacle <= -1) {
+                const lines = Array.from({length: Math.floor(-obstacle)}).map(() => newLine(true));
+                matches[matchName].hostBoard.push(...lines);
+                matches[matchName].hostBoard.splice(0, Math.floor(-obstacle));
+                matches[matchName].hostCallback({
+                    type: "ADDITION",
+                    board: lines
+                });
+            }
+            
+            if (obstacle >= 1) {
+                const lines = Array.from({length: Math.floor(obstacle)}).map(() => newLine(true));
+                matches[matchName].guestBoard.push(...lines);
+                matches[matchName].guestBoard.splice(0, Math.floor(obstacle));
+                matches[matchName].guestCallback({
+                    type: "ADDITION",
+                    board: lines
+                });
+            }
 
-                judge(matchName);
-            }, 3000);
-        }
+            matches[matchName].obstacle %= 1;
+
+            judge(matchName);
+        }, 3000);
     }
 
     return true;
