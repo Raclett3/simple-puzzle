@@ -67,3 +67,9 @@ input[type="button"]:hover {
 .invisible {
     display: none;
 }
+
+.title {
+    font-size: 200%;
+    text-align: center;
+    color: #FFF;
+}

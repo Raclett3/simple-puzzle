@@ -1,14 +1,16 @@
 import GameMessage from "../../models/gameMessage"
+import {init as initGame, remove, addLines} from "./game"
+import {waiting} from "./lobby";
 
 const url = new URL(location.href);
 const protocol = url.protocol === "https:" ? "wss" : "ws"
 let ws: WebSocket;
 
 export function init() {
-    ws = new WebSocket(protocol + "://" + url.host + "/ws");
+    ws = new WebSocket(protocol + "://" + url.host + "/ws/");
 
     ws.onclose = function() {
-        ws = new WebSocket(protocol + "://" + url.host + "/ws");
+        init();
     }
 
     ws.onmessage = function(message) {
@@ -19,6 +21,22 @@ export function init() {
             switch(data.type) {
                 case "MESSAGE":
                     alert(data.message);
+                    break;
+                
+                case "START":
+                    initGame();
+                    break;
+
+                case "REMOVE":
+                    remove(data.x, data.y);
+                    break;
+
+                case "ADDITION":
+                    addLines(data.board);
+                    break;
+
+                case "CREATE":
+                    waiting(data.name);
                     break;
             }
         }

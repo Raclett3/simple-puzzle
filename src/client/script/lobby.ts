@@ -4,6 +4,11 @@ import {send} from "./websocket";
 const lobby = document.createElement("div");
 
 export function init() {
+    wrapper.appendChild(lobby);
+    matching();
+}
+
+export function matching() {
     remove();
 
     const matchName = document.createElement("input");
@@ -34,7 +39,29 @@ export function init() {
     lobby.appendChild(matchName);
     lobby.appendChild(create);
     lobby.appendChild(join);
-    wrapper.appendChild(lobby);
+}
+
+export function waiting(name: string) {
+    remove();
+
+    const title = document.createElement("div");
+    const cancel = document.createElement("input");
+    
+    title.textContent = name;
+    title.setAttribute("class", "title");
+    cancel.setAttribute("type", "button");
+    cancel.setAttribute("value", "キャンセル");
+
+    cancel.addEventListener("click", function() {
+        send({
+            type: "DELETE"
+        });
+
+        matching();
+    });
+    
+    lobby.appendChild(title);
+    lobby.appendChild(cancel);
 }
 
 export function remove() {
