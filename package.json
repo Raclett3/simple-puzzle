@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "description": "Simple puzzle game",
     "main": "index.js",
-    "scripts": {},
+    "scripts": {
+        "build": "gulp"
+    },
     "author": "Raclett3 <im@s283.net>",
     "license": "MIT",
     "dependencies": {
@@ -15,7 +17,11 @@
         "@types/express": "^4.17.1",
         "@types/ws": "^6.0.3",
         "gulp": "^4.0.2",
+        "gulp-connect": "^5.7.0",
         "gulp-typescript": "^5.0.1",
-        "typescript": "^3.5.3"
+        "ts-loader": "^6.1.2",
+        "typescript": "^3.5.3",
+        "webpack": "^4.40.2",
+        "webpack-stream": "^5.2.1"
     }
 }
