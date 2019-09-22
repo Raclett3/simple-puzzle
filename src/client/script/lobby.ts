@@ -1,6 +1,6 @@
 import {wrapper} from "./index"
 
-export const lobby = document.createElement("div");
+const lobby = document.createElement("div");
 
 export function init() {
     const matchName = document.createElement("input");
@@ -18,4 +18,10 @@ export function init() {
     lobby.appendChild(create);
     lobby.appendChild(join);
     wrapper.appendChild(lobby);
+}
+
+export function remove() {
+    while (lobby.firstChild) {
+        lobby.removeChild(lobby.firstChild);
+    }
 }

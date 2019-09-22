@@ -2,7 +2,7 @@ import {blockSize, drawBlock, clear} from "./canvas"
 import {wrapper, BoardHeight, BoardWidth} from "./index"
 import Block from "../../models/block"
 import {send} from "./websocket"
-import {lobby} from "./lobby";
+import {remove as removeLobby} from "./lobby";
 
 let board: Block[][] = [];
 let queue: Block[][] = [];
@@ -229,9 +229,7 @@ export function addLines(lines: Block[][]) {
 
 export function init() {
     wrapper.addEventListener("mousedown", mousedown);
-    while (lobby.firstChild) {
-        lobby.removeChild(lobby.firstChild);
-    }
+    removeLobby();
     board = Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
 }
 
