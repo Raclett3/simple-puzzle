@@ -205,6 +205,11 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
     }
 
     const score = removeSingleBlock(positionX, positionY);
+
+    if (score === 0) {
+        return false;
+    }
+
     const prev = matches[matchName].obstacle;
     matches[matchName].obstacle += ((1 + score) * score / 2 / 50) * (host ? 1 : -1);
 
@@ -339,7 +344,7 @@ export function joinMatch(matchName: string, guestCallback: Callback): boolean {
         if (!(matchName in matches)) {
             return;
         }
-        
+
         matches[matchName].hostCallback({
             type: "ADDITION",
             board: [host]
