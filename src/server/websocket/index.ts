@@ -26,7 +26,7 @@ export default function open(port: number) {
 
                 switch (data.type) {
                     case "CREATE":
-                        if (!("name" in data)) {
+                        if (!("name" in data) || data.name === "") {
                             break;
                         }
                         if (matchName && host) {
