@@ -25,7 +25,7 @@ export function init() {
                     break;
                 
                 case "START":
-                    initGame();
+                    initGame(false);
                     break;
 
                 case "REMOVE":

@@ -1,5 +1,6 @@
 import {wrapper} from "./index"
 import {send} from "./websocket";
+import {init as initGame, removeEvent} from "./game"
 
 const lobby = document.createElement("div");
 
@@ -15,6 +16,7 @@ export function matching() {
     const matchName = document.createElement("input");
     const create = document.createElement("input");
     const join = document.createElement("input");
+    const single = document.createElement("input");
     const linkBase = document.createElement("div");
     const link = document.createElement("a");
 
@@ -24,8 +26,10 @@ export function matching() {
     matchName.setAttribute("type", "text");
     create.setAttribute("type", "button");
     join.setAttribute("type", "button");
+    single.setAttribute("type", "button");
     create.setAttribute("value", "作成");
     join.setAttribute("value", "参加(ルーム名が空の場合ランダムマッチング)");
+    single.setAttribute("value", "練習(シングルプレイ)");
     linkBase.setAttribute("class", "center");
     link.textContent = "ルール";
     link.setAttribute("href", "./readme.html");
@@ -45,10 +49,15 @@ export function matching() {
         });
     });
 
+    single.addEventListener("click", function() {
+        initGame(true);
+    });
+
     lobby.appendChild(title);
     lobby.appendChild(matchName);
     lobby.appendChild(create);
     lobby.appendChild(join);
+    lobby.appendChild(single);
     lobby.appendChild(linkBase);
 }
 
@@ -102,6 +111,7 @@ export function result(message: string) {
     title.textContent = message;
     title.setAttribute("class", "title");
 
+    removeEvent();
     
     lobby.appendChild(title);
 

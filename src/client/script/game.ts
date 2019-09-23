@@ -2,8 +2,9 @@ import {blockSize, drawBlock, clear} from "./canvas"
 import {wrapper, BoardHeight, BoardWidth} from "./index"
 import Block from "../../models/block"
 import {send} from "./websocket"
-import {remove as removeLobby, countDown} from "./lobby";
+import {remove as removeLobby, countDown, result} from "./lobby";
 
+let local: boolean = false;
 let board: Block[][] = [];
 let queue: Block[][] = [];
 let drawing: boolean = false;
@@ -30,12 +31,16 @@ function mousedown(event: MouseEvent) {
     const positionY = Math.floor(event.offsetY / blockSize);
     const emptyCount = board.reduce((prev, current) => current[positionX] === Block.Void ? prev + 1 : prev, 0)
 
-    send({
-        type: "REMOVE",
-        x: positionX,
-        y: positionY,
-        emptyCount: emptyCount
-    });
+    if (local) {
+        remove(positionX, positionY);
+    } else {
+        send({
+            type: "REMOVE",
+            x: positionX,
+            y: positionY,
+            emptyCount: emptyCount
+        });
+    }
 }
 
 function resolveQueue() {
@@ -57,6 +62,12 @@ function resolveQueue() {
         drawing = false;
         board.push(...resolved);
         board.splice(0, resolved.length);
+        if (
+            local
+            && board[0].reduce((prev, current) => prev || current !== Block.Void, false)
+        ) {
+            result("GAME OVER");
+        }
     }
 
     if (drawing) {
@@ -163,6 +174,14 @@ export function remove(positionX: number, positionY: number): void {
     draw(0, positionsList);
 }
 
+function newLine() {
+    const line = Array.from({length: BoardWidth}).map(() => Block.Block);
+    const position = Math.floor(Math.random() * BoardWidth);
+    line[position] = Block.Bomb;
+    line[(position + Math.floor(Math.random() * (BoardWidth - 1)) + 1) % BoardWidth] = Block.Bomb;
+    addLines([line]);
+}
+
 function fall() {
     function draw() {
         clear();
@@ -199,7 +218,11 @@ function fall() {
                                     });
         board = gravitated[0].map((_, key) => gravitated.map(row => row[key])).reverse();
         drawing = false;
-        resolveQueue();
+        if (local) {
+            newLine();
+        } else {
+            resolveQueue();
+        }
     }
 
     const blocks: FreeBlock[] = [];
@@ -227,10 +250,19 @@ export function addLines(lines: Block[][]) {
     resolveQueue();
 }
 
-export function init() {
+export function init(single: boolean) {
+    local = single;
     wrapper.addEventListener("mousedown", mousedown);
     removeLobby();
     clear();
-    countDown(5);
     board = Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
+    if (single) {
+        newLine();
+    } else {
+        countDown(5);
+    }
+}
+
+export function removeEvent() {
+    wrapper.removeEventListener("mousedown", mousedown);
 }
