@@ -19,6 +19,9 @@ type GameMessage = {
 } | {
     type: "MESSAGE",
     message: string
+} | {
+    type: "OBSTACLE",
+    count: number
 };
 
 export default GameMessage;

@@ -1,6 +1,7 @@
 import GameMessage from "../../models/gameMessage"
 import {init as initGame, remove, addLines} from "./game"
 import {waiting, result} from "./lobby";
+import {notice} from "./canvas"
 
 const url = new URL(location.href);
 const protocol = url.protocol === "https:" ? "wss" : "ws"
@@ -42,6 +43,10 @@ export function init() {
                 case "WIN":
                 case "LOSE":
                     result(data.type);
+                    break;
+
+                case "OBSTACLE":
+                    notice(data.count);
                     break;
             }
         }

@@ -2,6 +2,7 @@ import {wrapper, BoardHeight, BoardWidth} from "./index"
 import Block from "../../models/block"
 
 export let blockSize = 0;
+let noticeCount = 0;
 const game = document.createElement("canvas");
 const context = game.getContext("2d")!;
 
@@ -26,11 +27,11 @@ export function resize() {
 
 export function init() {
     wrapper.appendChild(game);
-    context.lineWidth = 2;
     resize();
 }
 
 export function drawBlock(x: number, y: number, block: Block, alpha: number) {
+    context.lineWidth = 2;
     context.strokeStyle = "rgba(255, 255, 255, " + String(Math.min(1, alpha)) + ")";
 
     if (block === Block.Block) {
@@ -44,6 +45,19 @@ export function drawBlock(x: number, y: number, block: Block, alpha: number) {
     }
 }
 
+function drawNotice() {
+    context.fillStyle = "#FFFFFF";
+    for (let i = 0; i < BoardWidth && i < noticeCount; i++) {
+        context.fillRect((i + 0.05) * blockSize, 0.1 * blockSize, 0.9 * blockSize, 0.3 * blockSize);
+    }
+}
+
 export function clear() {
     context.clearRect(0, 0, blockSize * BoardWidth, blockSize * BoardHeight);
+    drawNotice();
+}
+
+export function notice(count: number) {
+    noticeCount = count;
+    drawNotice();
 }

@@ -251,6 +251,18 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
 
     const obstacle = matches[matchName].obstacle;
 
+    if (Math.floor(prev) !== Math.floor(obstacle)) {
+        matches[matchName].guestCallback({
+            type: "OBSTACLE",
+            count: Math.floor(obstacle)
+        });
+        
+        matches[matchName].hostCallback({
+            type: "OBSTACLE",
+            count: Math.floor(-obstacle)
+        });
+    }
+
     if (
         Math.abs(obstacle) >= 1
         && (
@@ -284,6 +296,16 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
                     board: lines
                 });
             }
+
+            matches[matchName].guestCallback({
+                type: "OBSTACLE",
+                count: 0
+            });
+            
+            matches[matchName].hostCallback({
+                type: "OBSTACLE",
+                count: 0
+            });
 
             matches[matchName].obstacle %= 1;
 
