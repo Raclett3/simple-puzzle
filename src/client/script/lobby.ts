@@ -23,7 +23,7 @@ export function matching() {
     create.setAttribute("type", "button");
     join.setAttribute("type", "button");
     create.setAttribute("value", "作成");
-    join.setAttribute("value", "参加");
+    join.setAttribute("value", "参加(ルーム名が空の場合ランダムマッチング)");
 
     create.addEventListener("click", function() {
         send({

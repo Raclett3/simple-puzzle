@@ -32,7 +32,7 @@ function newBoard(): Board {
     return Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
 }
 
-export function createMatch(matchName: string, hostCallback: Callback) : boolean {
+export function createMatch(matchName: string, hostCallback: Callback, alterMessage?: string) : boolean {
     if (matchName in matches) {
         hostCallback({
             type: "MESSAGE",
@@ -55,7 +55,7 @@ export function createMatch(matchName: string, hostCallback: Callback) : boolean
 
     hostCallback({
         type: "CREATE",
-        name: matchName
+        name: alterMessage || matchName
     });
 
     return true;

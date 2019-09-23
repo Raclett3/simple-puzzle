@@ -1,6 +1,13 @@
 import * as ws from "ws"
 import GameMessage from "../../models/gameMessage"
 import {deleteMatch, createMatch, joinMatch, surrender, removeBlock} from "./matches"
+import {createHash} from "crypto"
+
+let randomRoom: string | null = null;
+
+function md5(data: string) {
+    return createHash("md5").update(data).digest("hex");
+}
 
 export default function open(port: number) {
     const server = new ws.Server({port: port});
@@ -40,6 +47,9 @@ export default function open(port: number) {
 
                     case "DELETE":
                         if (matchName && host) {
+                            if (matchName === randomRoom) {
+                                randomRoom = null;
+                            }
                             deleteMatch(matchName);
                             matchName = null;
                         }
@@ -51,6 +61,20 @@ export default function open(port: number) {
                         }
                         if (matchName && host) {
                             deleteMatch(matchName);
+                        }
+                        if (data.name === "") {
+                            if (randomRoom !== null) {
+                                matchName = randomRoom;
+                                host = false;
+                                joinMatch(randomRoom, callback);
+                                randomRoom = null;
+                            } else {
+                                matchName = md5(String(Date.now()) + String(Math.random()));
+                                host = true;
+                                randomRoom = matchName;
+                                createMatch(matchName, callback, "Waiting...");
+                            }
+                            break;
                         }
                         matchName = data.name;
                         host = false;
@@ -84,6 +108,9 @@ export default function open(port: number) {
 
         socket.on("close", () => {
             if (matchName) {
+                if (matchName === randomRoom) {
+                    randomRoom = null;
+                }
                 deleteMatch(matchName);
                 surrender(matchName, host);
             }
