@@ -11,10 +11,13 @@ export function init() {
 export function matching() {
     remove();
 
+    const title = document.createElement("div");
     const matchName = document.createElement("input");
     const create = document.createElement("input");
     const join = document.createElement("input");
 
+    title.textContent = "ルーム名";
+    title.setAttribute("class", "center");
     lobby.setAttribute("class", "lobby");
     matchName.setAttribute("type", "text");
     create.setAttribute("type", "button");
@@ -36,6 +39,7 @@ export function matching() {
         });
     });
 
+    lobby.appendChild(title);
     lobby.appendChild(matchName);
     lobby.appendChild(create);
     lobby.appendChild(join);

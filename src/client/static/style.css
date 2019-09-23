@@ -13,7 +13,7 @@ canvas {
 
 input[type="text"], input[type="password"] {
     border: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0);
     border-bottom: 2px solid #FFF;
     border-top: 2px solid #FFF;
     padding: 5px;
@@ -57,6 +57,7 @@ input[type="button"]:hover {
 }
 
 .lobby {
+    background-color: rgba(0, 0, 0, 0.5);
     position: relative;
     top: 50%;
     left: 0;
@@ -70,6 +71,11 @@ input[type="button"]:hover {
 
 .title {
     font-size: 200%;
+    text-align: center;
+    color: #FFF;
+}
+
+.center {
     text-align: center;
     color: #FFF;
 }
