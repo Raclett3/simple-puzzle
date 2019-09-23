@@ -11,6 +11,10 @@ canvas {
     transform: translate(-50%, -50%);
 }
 
+a {
+    color: #FFF;
+}
+
 input[type="text"], input[type="password"] {
     border: 0;
     background-color: rgba(0, 0, 0, 0);
