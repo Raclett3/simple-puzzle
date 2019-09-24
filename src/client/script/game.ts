@@ -59,6 +59,10 @@ function resolveQueue() {
     }
 
     function calc() {
+        if (queue.length > 0) {
+            draw(0);
+            return;
+        }
         drawing = false;
         board.push(...resolved);
         board.splice(0, resolved.length);
