@@ -1,4 +1,4 @@
-import {blockSize, drawBlock, clear} from "./canvas"
+import {blockSize, drawBlock, clear, notice} from "./canvas"
 import {wrapper, BoardHeight, BoardWidth} from "./index"
 import Block from "../../models/block"
 import {send} from "./websocket"
@@ -255,6 +255,7 @@ export function init(single: boolean) {
     wrapper.addEventListener("mousedown", mousedown);
     removeLobby();
     clear();
+    notice(0);
     board = Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
     if (single) {
         newLine();
