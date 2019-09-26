@@ -1,5 +1,5 @@
-import {wrapper, BoardHeight, BoardWidth} from "./index"
-import Block from "../../models/block"
+import {wrapper, BoardHeight, BoardWidth} from "./index";
+import Block from "../../models/block";
 
 export let blockSize = 0;
 let noticeCount = 0;

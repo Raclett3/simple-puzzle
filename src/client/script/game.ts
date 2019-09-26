@@ -1,7 +1,7 @@
-import {blockSize, drawBlock, clear, notice} from "./canvas"
-import {wrapper, BoardHeight, BoardWidth} from "./index"
-import Block from "../../models/block"
-import {send} from "./websocket"
+import {blockSize, drawBlock, clear, notice} from "./canvas";
+import {wrapper, BoardHeight, BoardWidth} from "./index";
+import Block from "../../models/block";
+import {send} from "./websocket";
 import {remove as removeLobby, countDown, result} from "./lobby";
 
 let local: boolean = false;

@@ -1,5 +1,5 @@
-import GameMessage from "../../models/gameMessage"
-import Block from "../../models/block"
+import GameMessage from "../../models/gameMessage";
+import Block from "../../models/block";
 
 enum Status {
     Waiting = 1,

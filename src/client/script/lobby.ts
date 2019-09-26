@@ -1,6 +1,6 @@
-import {wrapper} from "./index"
+import {wrapper} from "./index";
 import {send} from "./websocket";
-import {init as initGame, removeEvent} from "./game"
+import {init as initGame, removeEvent} from "./game";
 
 const lobby = document.createElement("div");
 

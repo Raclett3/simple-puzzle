@@ -1,7 +1,7 @@
-import * as ws from "ws"
-import GameMessage from "../../models/gameMessage"
-import {deleteMatch, createMatch, joinMatch, surrender, removeBlock} from "./matches"
-import {createHash} from "crypto"
+import * as ws from "ws";
+import GameMessage from "../../models/gameMessage";
+import {deleteMatch, createMatch, joinMatch, surrender, removeBlock} from "./matches";
+import {createHash} from "crypto";
 
 let randomRoom: string | null = null;
 

@@ -1,6 +1,6 @@
-import * as Express from "express"
-import * as BodyParser from "body-parser"
-import api from "./api"
+import * as Express from "express";
+import * as BodyParser from "body-parser";
+import api from "./api";
 
 export default async function listen(port: number) {
     return await new Promise<void>((resolve) => {
