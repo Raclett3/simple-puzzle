@@ -162,14 +162,16 @@ export function removeBlock(
                         emptyCount: number,
                         positionX: number,
                         positionY: number): boolean {
+    const match = matches[matchName];
+
     function removeSingleBlock(positionX: number, positionY: number): number {
         if (
             positionX >= BoardWidth
             || positionX < 0
             || positionY >= BoardHeight
             || positionY < 0
-            || (matches[matchName].hostBoard[positionY][positionX] === 0 && host)
-            || (matches[matchName].guestBoard[positionY][positionX] === 0 && !host)
+            || (match.hostBoard[positionY][positionX] === 0 && host)
+            || (match.guestBoard[positionY][positionX] === 0 && !host)
         ) {
             return 0;
         }
@@ -177,13 +179,13 @@ export function removeBlock(
         let total = 1;
 
         const bomb = host ?
-            matches[matchName].hostBoard[positionY][positionX] === Block.Bomb :
-            matches[matchName].guestBoard[positionY][positionX] === Block.Bomb;
+            match.hostBoard[positionY][positionX] === Block.Bomb :
+            match.guestBoard[positionY][positionX] === Block.Bomb;
 
         if (host) {
-            matches[matchName].hostBoard[positionY][positionX] = Block.Void;
+            match.hostBoard[positionY][positionX] = Block.Void;
         } else {
-            matches[matchName].guestBoard[positionY][positionX] = Block.Void;
+            match.guestBoard[positionY][positionX] = Block.Void;
         }
 
         if (bomb) {
@@ -198,7 +200,7 @@ export function removeBlock(
     }
 
     if (!(matchName in matches)
-        || matches[matchName].status !== Status.Playing
+        || match.status !== Status.Playing
         || positionX >= BoardWidth
         || positionX < 0
         || positionY >= BoardHeight
@@ -208,8 +210,8 @@ export function removeBlock(
     }
 
     const actualEmpty = host ?
-        matches[matchName].hostBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0) :
-        matches[matchName].guestBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0);
+        match.hostBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0) :
+        match.guestBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0);
 
     if (actualEmpty !== emptyCount) {
         return false;
@@ -222,142 +224,142 @@ export function removeBlock(
     }
 
     const line = newLine(false);
-    const prevSide = matches[matchName].obstaclesSide;
+    const prevSide = match.obstaclesSide;
 
     if (host) {
-        matches[matchName].hostBoard.push(line);
-        matches[matchName].hostBoard.splice(0, 1);
-        matches[matchName].hostCallback({
+        match.hostBoard.push(line);
+        match.hostBoard.splice(0, 1);
+        match.hostCallback({
             type: "REMOVE",
             x: positionX,
             y: positionY,
             emptyCount
         });
-        matches[matchName].hostCallback({
+        match.hostCallback({
             type: "ADDITION",
             board: [line]
         });
-        matches[matchName].hostBoard = fall(matches[matchName].hostBoard);
+        match.hostBoard = fall(match.hostBoard);
 
-        matches[matchName].hostObstacleFraction += (1 + score) * score / 2 / 50;
-        let obstacleCount = Math.floor(matches[matchName].hostObstacleFraction);
-        matches[matchName].hostObstacleFraction %= 1;
+        match.hostObstacleFraction += (1 + score) * score / 2 / 50;
+        let obstacleCount = Math.floor(match.hostObstacleFraction);
+        match.hostObstacleFraction %= 1;
 
-        if (matches[matchName].obstaclesSide === "host") {
-            while (obstacleCount > 0 && matches[matchName].obstacles.length > 0) {
-                if (matches[matchName].obstacles[0] <= obstacleCount) {
-                    obstacleCount -= matches[matchName].obstacles[0];
-                    matches[matchName].obstacles.shift();
+        if (match.obstaclesSide === "host") {
+            while (obstacleCount > 0 && match.obstacles.length > 0) {
+                if (match.obstacles[0] <= obstacleCount) {
+                    obstacleCount -= match.obstacles[0];
+                    match.obstacles.shift();
                 } else {
-                    matches[matchName].obstacles[0] -= obstacleCount;
+                    match.obstacles[0] -= obstacleCount;
                     obstacleCount = 0;
                 }
             }
         }
 
         if (obstacleCount > 0) {
-            matches[matchName].obstaclesSide = "guest";
-            matches[matchName].obstacles.push(obstacleCount);
+            match.obstaclesSide = "guest";
+            match.obstacles.push(obstacleCount);
         }
     } else {
-        matches[matchName].guestBoard.push(line);
-        matches[matchName].guestBoard.splice(0, 1);
-        matches[matchName].guestCallback({
+        match.guestBoard.push(line);
+        match.guestBoard.splice(0, 1);
+        match.guestCallback({
             type: "REMOVE",
             x: positionX,
             y: positionY,
             emptyCount
         });
-        matches[matchName].guestCallback({
+        match.guestCallback({
             type: "ADDITION",
             board: [line]
         });
-        matches[matchName].guestBoard = fall(matches[matchName].guestBoard);
+        match.guestBoard = fall(match.guestBoard);
 
-        matches[matchName].guestObstacleFraction += (1 + score) * score / 2 / 50;
-        let obstacleCount = Math.floor(matches[matchName].guestObstacleFraction);
-        matches[matchName].guestObstacleFraction %= 1;
+        match.guestObstacleFraction += (1 + score) * score / 2 / 50;
+        let obstacleCount = Math.floor(match.guestObstacleFraction);
+        match.guestObstacleFraction %= 1;
 
-        if (matches[matchName].obstaclesSide === "guest") {
-            while (obstacleCount > 0 && matches[matchName].obstacles.length > 0) {
-                if (matches[matchName].obstacles[0] <= obstacleCount) {
-                    obstacleCount -= matches[matchName].obstacles[0];
-                    matches[matchName].obstacles.shift();
+        if (match.obstaclesSide === "guest") {
+            while (obstacleCount > 0 && match.obstacles.length > 0) {
+                if (match.obstacles[0] <= obstacleCount) {
+                    obstacleCount -= match.obstacles[0];
+                    match.obstacles.shift();
                 } else {
-                    matches[matchName].obstacles[0] -= obstacleCount;
+                    match.obstacles[0] -= obstacleCount;
                     obstacleCount = 0;
                 }
             }
         }
 
         if (obstacleCount > 0) {
-            matches[matchName].obstaclesSide = "host";
-            matches[matchName].obstacles.push(obstacleCount);
+            match.obstaclesSide = "host";
+            match.obstacles.push(obstacleCount);
         }
     }
 
-    if (matches[matchName].obstacles.length === 0) {
-        matches[matchName].obstaclesSide = null;
+    if (match.obstacles.length === 0) {
+        match.obstaclesSide = null;
     }
 
-    matches[matchName].guestCallback({
+    match.guestCallback({
         type: "OBSTACLE",
-        count: matches[matchName].obstaclesSide === "guest" ? matches[matchName].obstacles : []
+        count: match.obstaclesSide === "guest" ? match.obstacles : []
     });
 
-    matches[matchName].hostCallback({
+    match.hostCallback({
         type: "OBSTACLE",
-        count: matches[matchName].obstaclesSide === "host" ? matches[matchName].obstacles : []
+        count: match.obstaclesSide === "host" ? match.obstacles : []
     });
 
     if (judge(matchName)) {
         return true;
     }
 
-    if (prevSide !== matches[matchName].obstaclesSide) {
-        const timer = matches[matchName].obstacleTimer;
+    if (prevSide !== match.obstaclesSide) {
+        const timer = match.obstacleTimer;
         if (timer) {
             clearTimeout(timer);
         }
 
         const processObstacle = () => {
-            if (matches[matchName].obstacles.length > 0) {
-                if (matches[matchName].obstaclesSide === "host") {
-                    const linesCount = matches[matchName].obstacles.shift()!;
+            if (match.obstacles.length > 0) {
+                if (match.obstaclesSide === "host") {
+                    const linesCount = match.obstacles.shift()!;
                     const lines = Array.from({length: linesCount}).map(() => newLine(true));
-                    matches[matchName].hostBoard.push(...lines);
-                    matches[matchName].hostBoard.splice(0, linesCount);
-                    matches[matchName].hostCallback({
+                    match.hostBoard.push(...lines);
+                    match.hostBoard.splice(0, linesCount);
+                    match.hostCallback({
                         type: "ADDITION",
                         board: lines
                     });
                 } else {
-                    const linesCount = matches[matchName].obstacles.shift()!;
+                    const linesCount = match.obstacles.shift()!;
                     const lines = Array.from({length: linesCount}).map(() => newLine(true));
-                    matches[matchName].guestBoard.push(...lines);
-                    matches[matchName].guestBoard.splice(0, linesCount);
-                    matches[matchName].guestCallback({
+                    match.guestBoard.push(...lines);
+                    match.guestBoard.splice(0, linesCount);
+                    match.guestCallback({
                         type: "ADDITION",
                         board: lines
                     });
                 }
             }
 
-            matches[matchName].guestCallback({
+            match.guestCallback({
                 type: "OBSTACLE",
-                count: matches[matchName].obstaclesSide === "guest" ? matches[matchName].obstacles : []
+                count: match.obstaclesSide === "guest" ? match.obstacles : []
             });
 
-            matches[matchName].hostCallback({
+            match.hostCallback({
                 type: "OBSTACLE",
-                count: matches[matchName].obstaclesSide === "host" ? matches[matchName].obstacles : []
+                count: match.obstaclesSide === "host" ? match.obstacles : []
             });
 
-            matches[matchName].obstacleTimer = setTimeout(processObstacle, 3000);
+            match.obstacleTimer = setTimeout(processObstacle, 3000);
             judge(matchName);
         };
 
-        matches[matchName].obstacleTimer = setTimeout(processObstacle, 3000);
+        match.obstacleTimer = setTimeout(processObstacle, 3000);
     }
 
     return true;
