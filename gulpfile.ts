@@ -1,8 +1,8 @@
-const gulp = require("gulp");
-const typescript = require("gulp-typescript");
-const webpack = require("webpack");
-const webpackStream = require("webpack-stream");
-const webpackConfig = require("./webpack-config");
+import * as gulp from "gulp";
+import * as typescript from "gulp-typescript";
+import * as webpack from "webpack";
+import * as webpackStream from "webpack-stream";
+import webpackConfig from "./webpack-config";
 
 gulp.task("build-server", function(done) {
     const project = typescript.createProject("./src/tsconfig.json");

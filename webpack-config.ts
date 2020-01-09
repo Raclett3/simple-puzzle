@@ -1,4 +1,6 @@
-module.exports = {
+import {Configuration} from "webpack"
+
+const config: Configuration = {
     mode: "production",
     entry: "./src/client/script/index.ts",
     output: {
@@ -14,3 +16,5 @@ module.exports = {
         extensions: [".ts"]
     }
 }
+
+export default config;
