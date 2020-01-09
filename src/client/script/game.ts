@@ -254,8 +254,8 @@ export function init(single: boolean) {
     local = single;
     wrapper.addEventListener("mousedown", mousedown);
     removeLobby();
+    notice(0, 0);
     clear();
-    notice(0);
     queue = [];
     board = Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
     if (single) {

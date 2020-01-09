@@ -46,7 +46,7 @@ export function init() {
                     break;
 
                 case "OBSTACLE":
-                    notice(data.count);
+                    notice(data.count[0] || 0, data.count.slice(1).reduce((acc, x) => acc + x, 0));
                     break;
             }
         }

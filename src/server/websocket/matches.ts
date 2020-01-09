@@ -20,7 +20,10 @@ type Match = {
     guestCallback: Callback | (() => any),
     hostBoard: Board,
     guestBoard: Board,
-    obstacle: number,
+    obstacles: number[],
+    obstaclesSide: "host" | "guest" | null,
+    hostObstacleFraction: number,
+    guestObstacleFraction: number,
     obstacleTimer: NodeJS.Timeout | null,
     width: number,
     height: number
@@ -47,7 +50,10 @@ export function createMatch(matchName: string, hostCallback: Callback, alterMess
         guestCallback: () => null,
         hostBoard: newBoard(),
         guestBoard: newBoard(),
-        obstacle: 0,
+        obstacles: [],
+        obstaclesSide: null,
+        hostObstacleFraction: 0,
+        guestObstacleFraction: 0,
         obstacleTimer: null,
         width: BoardWidth,
         height: BoardHeight
@@ -215,10 +221,8 @@ export function removeBlock(
         return false;
     }
 
-    const prev = matches[matchName].obstacle;
-    matches[matchName].obstacle += ((1 + score) * score / 2 / 50) * (host ? 1 : -1);
-
     const line = newLine(false);
+    const prevSide = matches[matchName].obstaclesSide;
 
     if (host) {
         matches[matchName].hostBoard.push(line);
@@ -234,6 +238,27 @@ export function removeBlock(
             board: [line]
         });
         matches[matchName].hostBoard = fall(matches[matchName].hostBoard);
+
+        matches[matchName].hostObstacleFraction += (1 + score) * score / 2 / 50;
+        let obstacleCount = Math.floor(matches[matchName].hostObstacleFraction);
+        matches[matchName].hostObstacleFraction %= 1;
+
+        if (matches[matchName].obstaclesSide === "host") {
+            while (obstacleCount > 0 && matches[matchName].obstacles.length > 0) {
+                if (matches[matchName].obstacles[0] <= obstacleCount) {
+                    obstacleCount -= matches[matchName].obstacles[0];
+                    matches[matchName].obstacles.shift();
+                } else {
+                    matches[matchName].obstacles[0] -= obstacleCount;
+                    obstacleCount = 0;
+                }
+            }
+        }
+
+        if (obstacleCount > 0) {
+            matches[matchName].obstaclesSide = "guest";
+            matches[matchName].obstacles.push(obstacleCount);
+        }
     } else {
         matches[matchName].guestBoard.push(line);
         matches[matchName].guestBoard.splice(0, 1);
@@ -248,74 +273,91 @@ export function removeBlock(
             board: [line]
         });
         matches[matchName].guestBoard = fall(matches[matchName].guestBoard);
+
+        matches[matchName].guestObstacleFraction += (1 + score) * score / 2 / 50;
+        let obstacleCount = Math.floor(matches[matchName].guestObstacleFraction);
+        matches[matchName].guestObstacleFraction %= 1;
+
+        if (matches[matchName].obstaclesSide === "guest") {
+            while (obstacleCount > 0 && matches[matchName].obstacles.length > 0) {
+                if (matches[matchName].obstacles[0] <= obstacleCount) {
+                    obstacleCount -= matches[matchName].obstacles[0];
+                    matches[matchName].obstacles.shift();
+                } else {
+                    matches[matchName].obstacles[0] -= obstacleCount;
+                    obstacleCount = 0;
+                }
+            }
+        }
+
+        if (obstacleCount > 0) {
+            matches[matchName].obstaclesSide = "host";
+            matches[matchName].obstacles.push(obstacleCount);
+        }
     }
+
+    if (matches[matchName].obstacles.length === 0) {
+        matches[matchName].obstaclesSide = null;
+    }
+
+    matches[matchName].guestCallback({
+        type: "OBSTACLE",
+        count: matches[matchName].obstaclesSide === "guest" ? matches[matchName].obstacles : []
+    });
+
+    matches[matchName].hostCallback({
+        type: "OBSTACLE",
+        count: matches[matchName].obstaclesSide === "host" ? matches[matchName].obstacles : []
+    });
 
     if (judge(matchName)) {
         return true;
     }
 
-    const obstacle = matches[matchName].obstacle;
-
-    if (Math.floor(prev) !== Math.floor(obstacle)) {
-        matches[matchName].guestCallback({
-            type: "OBSTACLE",
-            count: Math.floor(obstacle)
-        });
-
-        matches[matchName].hostCallback({
-            type: "OBSTACLE",
-            count: Math.floor(-obstacle)
-        });
-    }
-
-    if (
-        Math.abs(obstacle) >= 1
-        && (
-            Math.sign(prev) !== Math.sign(obstacle)
-            || Math.abs(prev) < 1)
-    ) {
+    if (prevSide !== matches[matchName].obstaclesSide) {
         const timer = matches[matchName].obstacleTimer;
         if (timer) {
             clearTimeout(timer);
         }
 
-        matches[matchName].obstacleTimer = setTimeout(() => {
-            const obstacle = matches[matchName].obstacle;
-
-            if (obstacle <= -1) {
-                const lines = Array.from({length: Math.floor(-obstacle)}).map(() => newLine(true));
-                matches[matchName].hostBoard.push(...lines);
-                matches[matchName].hostBoard.splice(0, Math.floor(-obstacle));
-                matches[matchName].hostCallback({
-                    type: "ADDITION",
-                    board: lines
-                });
-            }
-
-            if (obstacle >= 1) {
-                const lines = Array.from({length: Math.floor(obstacle)}).map(() => newLine(true));
-                matches[matchName].guestBoard.push(...lines);
-                matches[matchName].guestBoard.splice(0, Math.floor(obstacle));
-                matches[matchName].guestCallback({
-                    type: "ADDITION",
-                    board: lines
-                });
+        const processObstacle = () => {
+            if (matches[matchName].obstacles.length > 0) {
+                if (matches[matchName].obstaclesSide === "host") {
+                    const linesCount = matches[matchName].obstacles.shift()!;
+                    const lines = Array.from({length: linesCount}).map(() => newLine(true));
+                    matches[matchName].hostBoard.push(...lines);
+                    matches[matchName].hostBoard.splice(0, linesCount);
+                    matches[matchName].hostCallback({
+                        type: "ADDITION",
+                        board: lines
+                    });
+                } else {
+                    const linesCount = matches[matchName].obstacles.shift()!;
+                    const lines = Array.from({length: linesCount}).map(() => newLine(true));
+                    matches[matchName].guestBoard.push(...lines);
+                    matches[matchName].guestBoard.splice(0, linesCount);
+                    matches[matchName].guestCallback({
+                        type: "ADDITION",
+                        board: lines
+                    });
+                }
             }
 
             matches[matchName].guestCallback({
                 type: "OBSTACLE",
-                count: 0
+                count: matches[matchName].obstaclesSide === "guest" ? matches[matchName].obstacles : []
             });
 
             matches[matchName].hostCallback({
                 type: "OBSTACLE",
-                count: 0
+                count: matches[matchName].obstaclesSide === "host" ? matches[matchName].obstacles : []
             });
 
-            matches[matchName].obstacle %= 1;
-
+            matches[matchName].obstacleTimer = setTimeout(processObstacle, 3000);
             judge(matchName);
-        }, 3000);
+        };
+
+        matches[matchName].obstacleTimer = setTimeout(processObstacle, 3000);
     }
 
     return true;
