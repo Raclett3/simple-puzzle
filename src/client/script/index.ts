@@ -5,7 +5,7 @@ export const wrapper = document.createElement("div");
 export const BoardHeight = 9;
 export const BoardWidth = 8;
 
-window.onload = function() {
+window.onload = () => {
     wrapper.setAttribute("class", "wrapper");
     document.body.appendChild(wrapper);
     initCanvas();

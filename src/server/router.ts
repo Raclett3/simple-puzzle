@@ -1,18 +1,18 @@
-import * as Express from "express";
 import * as BodyParser from "body-parser";
+import * as Express from "express";
 import api from "./api";
 
 export default async function listen(port: number) {
     return await new Promise<void>((resolve) => {
         const app = Express();
-        
+
         app.use(BodyParser.urlencoded({extended: true}));
         app.use(BodyParser.json());
-        
+
         app.use("/api", api);
         app.use("/", Express.static(process.cwd() + "/build/client"));
-        
-        app.use(function (req, res) {
+
+        app.use((req, res) => {
             res.status(404);
             if (req.xhr) {
                 res.json({});
@@ -20,8 +20,8 @@ export default async function listen(port: number) {
                 res.send("404 Error");
             }
         });
-        
-        app.use(function (err: Express.ErrorRequestHandler, req: Express.Request, res: Express.Response) {
+
+        app.use((err: Express.ErrorRequestHandler, req: Express.Request, res: Express.Response) => {
             res.status(500);
             console.log(err);
             if (req.xhr) {
@@ -30,7 +30,7 @@ export default async function listen(port: number) {
                 res.send("500 Error");
             }
         });
-    
+
         app.listen(port, () => resolve());
     });
 }

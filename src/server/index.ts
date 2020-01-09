@@ -1,8 +1,8 @@
+import loadConfig from "./config";
 import listen from "./router";
 import open from "./websocket";
-import loadConfig from "./config";
 
-(async function() {
+(async () => {
     const config = await loadConfig(process.cwd() + "/config/config.json");
     await listen(config.port);
     open(config.websocketPort);

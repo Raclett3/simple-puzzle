@@ -1,5 +1,5 @@
-import {wrapper, BoardHeight, BoardWidth} from "./index";
 import Block from "../../models/block";
+import {BoardHeight, BoardWidth, wrapper} from "./index";
 
 export let blockSize = 0;
 let noticeCount = 0;
@@ -22,7 +22,7 @@ export function resize() {
     game.setAttribute("height", String(height));
     game.setAttribute("width", String(width));
 
-    wrapper.setAttribute("style", `height: ${height}px; width: ${width}px;`)
+    wrapper.setAttribute("style", `height: ${height}px; width: ${width}px;`);
 }
 
 export function init() {

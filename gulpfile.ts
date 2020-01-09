@@ -4,15 +4,15 @@ import * as webpack from "webpack";
 import * as webpackStream from "webpack-stream";
 import webpackConfig from "./webpack-config";
 
-gulp.task("build-server", function(done) {
+gulp.task("build-server", (done) => {
     const project = typescript.createProject("./src/tsconfig.json");
     project.src()
            .pipe(project())
-           .pipe(gulp.dest("./build"))
+           .pipe(gulp.dest("./build"));
     done();
 });
 
-gulp.task("build-client", function(done) {
+gulp.task("build-client", (done) => {
     webpackStream(webpackConfig, webpack)
         .pipe(gulp.dest("./build/client"));
     gulp.src(["./src/client/static/*"])

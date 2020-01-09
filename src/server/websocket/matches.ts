@@ -1,11 +1,11 @@
-import GameMessage from "../../models/gameMessage";
 import Block from "../../models/block";
+import GameMessage from "../../models/gameMessage";
 
 enum Status {
     Waiting = 1,
     Playing = 2,
     Ended = 3
-};
+}
 
 const BoardHeight = 9;
 const BoardWidth = 8;
@@ -32,7 +32,7 @@ function newBoard(): Board {
     return Array.from({length: BoardHeight}).map(() => Array.from({length: BoardWidth}).map(() => 0));
 }
 
-export function createMatch(matchName: string, hostCallback: Callback, alterMessage?: string) : boolean {
+export function createMatch(matchName: string, hostCallback: Callback, alterMessage?: string): boolean {
     if (matchName in matches) {
         hostCallback({
             type: "MESSAGE",
@@ -43,15 +43,15 @@ export function createMatch(matchName: string, hostCallback: Callback, alterMess
 
     matches[matchName] = {
         status: Status.Waiting,
-        hostCallback: hostCallback,
-        guestCallback: () => {},
+        hostCallback,
+        guestCallback: () => null,
         hostBoard: newBoard(),
         guestBoard: newBoard(),
         obstacle: 0,
         obstacleTimer: null,
         width: BoardWidth,
         height: BoardHeight
-    }
+    };
 
     hostCallback({
         type: "CREATE",
@@ -61,7 +61,7 @@ export function createMatch(matchName: string, hostCallback: Callback, alterMess
     return true;
 }
 
-export function deleteMatch(matchName: string) : boolean {
+export function deleteMatch(matchName: string): boolean {
     if (!(matchName in matches)) {
         return false;
     }
@@ -87,7 +87,7 @@ export function surrender(matchName: string, host: boolean): boolean {
     matches[matchName].guestCallback({
         type: host ? "WIN" : "LOSE"
     });
-        
+
     matches[matchName].hostCallback({
         type: host ? "LOSE" : "WIN"
     });
@@ -114,18 +114,18 @@ function judge(matchName: string): boolean {
 
     const host = matches[matchName].hostBoard[0].reduce((prev, current) => prev || current, 0);
     const guest = matches[matchName].guestBoard[0].reduce((prev, current) => prev || current, 0);
-    
+
     if (host || guest) {
         matches[matchName].guestCallback({
             type: guest ? "LOSE" : "WIN"
         });
-            
+
         matches[matchName].hostCallback({
             type: host ? "LOSE" : "WIN"
         });
 
         const timer = matches[matchName].obstacleTimer;
-    
+
         if (timer) {
             clearTimeout(timer);
         }
@@ -139,18 +139,23 @@ function judge(matchName: string): boolean {
 }
 
 function fall(board: Board) {
-    const rotated = board[0].map((_, key) => board.map(row => row[key]).reverse());
-    const gravitated = rotated.map((row) => row.filter(value => value !== 0))
+    const rotated = board[0].map((_, key) => board.map((row) => row[key]).reverse());
+    const gravitated = rotated.map((row) => row.filter((value) => value !== 0))
                                 .map((row) => {
                                     const length = row.length;
                                     row.length = BoardHeight;
                                     row.fill(0, length, BoardHeight);
                                     return row;
                                 });
-    return gravitated[0].map((_, key) => gravitated.map(row => row[key])).reverse();
+    return gravitated[0].map((_, key) => gravitated.map((row) => row[key])).reverse();
 }
 
-export function removeBlock(matchName: string, host: boolean, emptyCount: number, positionX: number, positionY: number): boolean {
+export function removeBlock(
+                        matchName: string,
+                        host: boolean,
+                        emptyCount: number,
+                        positionX: number,
+                        positionY: number): boolean {
     function removeSingleBlock(positionX: number, positionY: number): number {
         if (
             positionX >= BoardWidth
@@ -165,7 +170,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
 
         let total = 1;
 
-        const bomb = host ? 
+        const bomb = host ?
             matches[matchName].hostBoard[positionY][positionX] === Block.Bomb :
             matches[matchName].guestBoard[positionY][positionX] === Block.Bomb;
 
@@ -187,7 +192,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
     }
 
     if (!(matchName in matches)
-        ||matches[matchName].status !== Status.Playing
+        || matches[matchName].status !== Status.Playing
         || positionX >= BoardWidth
         || positionX < 0
         || positionY >= BoardHeight
@@ -198,8 +203,8 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
 
     const actualEmpty = host ?
         matches[matchName].hostBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0) :
-        matches[matchName].guestBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0)
-    
+        matches[matchName].guestBoard.reduce((prev, current) => current[positionX] === 0 ? prev + 1 : prev, 0);
+
     if (actualEmpty !== emptyCount) {
         return false;
     }
@@ -222,7 +227,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             type: "REMOVE",
             x: positionX,
             y: positionY,
-            emptyCount: emptyCount
+            emptyCount
         });
         matches[matchName].hostCallback({
             type: "ADDITION",
@@ -236,7 +241,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             type: "REMOVE",
             x: positionX,
             y: positionY,
-            emptyCount: emptyCount
+            emptyCount
         });
         matches[matchName].guestCallback({
             type: "ADDITION",
@@ -256,7 +261,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
             type: "OBSTACLE",
             count: Math.floor(obstacle)
         });
-        
+
         matches[matchName].hostCallback({
             type: "OBSTACLE",
             count: Math.floor(-obstacle)
@@ -286,7 +291,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
                     board: lines
                 });
             }
-            
+
             if (obstacle >= 1) {
                 const lines = Array.from({length: Math.floor(obstacle)}).map(() => newLine(true));
                 matches[matchName].guestBoard.push(...lines);
@@ -301,7 +306,7 @@ export function removeBlock(matchName: string, host: boolean, emptyCount: number
                 type: "OBSTACLE",
                 count: 0
             });
-            
+
             matches[matchName].hostCallback({
                 type: "OBSTACLE",
                 count: 0
@@ -344,7 +349,7 @@ export function joinMatch(matchName: string, guestCallback: Callback): boolean {
 
         return false;
     }
-    
+
     matches[matchName].status = Status.Playing;
     matches[matchName].guestCallback = guestCallback;
 
@@ -362,7 +367,7 @@ export function joinMatch(matchName: string, guestCallback: Callback): boolean {
     matches[matchName].hostBoard[8] = host;
     matches[matchName].guestBoard[8] = guest;
 
-    setTimeout(function() {
+    setTimeout(() => {
         if (!(matchName in matches)) {
             return;
         }
@@ -371,7 +376,7 @@ export function joinMatch(matchName: string, guestCallback: Callback): boolean {
             type: "ADDITION",
             board: [host]
         });
-    
+
         matches[matchName].guestCallback({
             type: "ADDITION",
             board: [guest]

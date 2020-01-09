@@ -1,6 +1,6 @@
+import {init as initGame, removeEvent} from "./game";
 import {wrapper} from "./index";
 import {send} from "./websocket";
-import {init as initGame, removeEvent} from "./game";
 
 const lobby = document.createElement("div");
 
@@ -35,21 +35,21 @@ export function matching() {
     link.setAttribute("href", "./readme.html");
     linkBase.appendChild(link);
 
-    create.addEventListener("click", function() {
+    create.addEventListener("click", () => {
         send({
             type: "CREATE",
             name: matchName.value
         });
     });
 
-    join.addEventListener("click", function() {
+    join.addEventListener("click", () => {
         send({
             type: "JOIN",
             name: matchName.value
         });
     });
 
-    single.addEventListener("click", function() {
+    single.addEventListener("click", () => {
         initGame(true);
     });
 
@@ -66,20 +66,20 @@ export function waiting(name: string) {
 
     const title = document.createElement("div");
     const cancel = document.createElement("input");
-    
+
     title.textContent = name;
     title.setAttribute("class", "title");
     cancel.setAttribute("type", "button");
     cancel.setAttribute("value", "キャンセル");
 
-    cancel.addEventListener("click", function() {
+    cancel.addEventListener("click", () => {
         send({
             type: "DELETE"
         });
 
         matching();
     });
-    
+
     lobby.appendChild(title);
     lobby.appendChild(cancel);
 }
@@ -88,13 +88,13 @@ export function countDown(count: number) {
     remove();
 
     const title = document.createElement("div");
-    
+
     title.textContent = String(count);
     title.setAttribute("class", "title");
-    
+
     lobby.appendChild(title);
 
-    setTimeout(function() {
+    setTimeout(() => {
         if (count > 1) {
             countDown(count - 1);
         } else {
@@ -107,12 +107,12 @@ export function result(message: string) {
     remove();
 
     const title = document.createElement("div");
-    
+
     title.textContent = message;
     title.setAttribute("class", "title");
 
     removeEvent();
-    
+
     lobby.appendChild(title);
 
     setTimeout(matching, 3000);

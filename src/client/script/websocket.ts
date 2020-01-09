@@ -1,29 +1,29 @@
 import GameMessage from "../../models/gameMessage";
-import {init as initGame, remove, addLines} from "./game";
-import {waiting, result} from "./lobby";
 import {notice} from "./canvas";
+import {addLines, init as initGame, remove} from "./game";
+import {result, waiting} from "./lobby";
 
 const url = new URL(location.href);
-const protocol = url.protocol === "https:" ? "wss" : "ws"
+const protocol = url.protocol === "https:" ? "wss" : "ws";
 let ws: WebSocket;
 
 export function init() {
     ws = new WebSocket(protocol + "://" + url.host + "/ws/");
 
-    ws.onclose = function() {
+    ws.onclose = () => {
         init();
-    }
+    };
 
-    ws.onmessage = function(message) {
+    ws.onmessage = (message) => {
         const raw = message.data;
         if (typeof raw === "string") {
             const data: GameMessage = JSON.parse(raw);
 
-            switch(data.type) {
+            switch (data.type) {
                 case "MESSAGE":
                     alert(data.message);
                     break;
-                
+
                 case "START":
                     initGame(false);
                     break;
@@ -39,7 +39,7 @@ export function init() {
                 case "CREATE":
                     waiting(data.name);
                     break;
-                
+
                 case "WIN":
                 case "LOSE":
                     result(data.type);
@@ -50,7 +50,7 @@ export function init() {
                     break;
             }
         }
-    }
+    };
 }
 
 export function send(message: GameMessage) {

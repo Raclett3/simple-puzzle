@@ -1,7 +1,7 @@
+import {createHash} from "crypto";
 import * as ws from "ws";
 import GameMessage from "../../models/gameMessage";
-import {deleteMatch, createMatch, joinMatch, surrender, removeBlock} from "./matches";
-import {createHash} from "crypto";
+import {createMatch, deleteMatch, joinMatch, removeBlock, surrender} from "./matches";
 
 let randomRoom: string | null = null;
 
@@ -10,7 +10,7 @@ function md5(data: string) {
 }
 
 export default function open(port: number) {
-    const server = new ws.Server({port: port});
+    const server = new ws.Server({port});
 
     server.on("connection", (socket) => {
         function callback(data: GameMessage) {
@@ -99,7 +99,7 @@ export default function open(port: number) {
                         }
                         break;
                 }
-            } catch(err) {
+            } catch (err) {
                 if (!(err instanceof SyntaxError)) {
                     throw err;
                 }

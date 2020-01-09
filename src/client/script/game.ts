@@ -1,8 +1,8 @@
-import {blockSize, drawBlock, clear, notice} from "./canvas";
-import {wrapper, BoardHeight, BoardWidth} from "./index";
 import Block from "../../models/block";
+import {blockSize, clear, drawBlock, notice} from "./canvas";
+import {BoardHeight, BoardWidth, wrapper} from "./index";
+import {countDown, remove as removeLobby, result} from "./lobby";
 import {send} from "./websocket";
-import {remove as removeLobby, countDown, result} from "./lobby";
 
 let local: boolean = false;
 let board: Block[][] = [];
@@ -29,7 +29,7 @@ function mousedown(event: MouseEvent) {
 
     const positionX = Math.floor(event.offsetX / blockSize);
     const positionY = Math.floor(event.offsetY / blockSize);
-    const emptyCount = board.reduce((prev, current) => current[positionX] === Block.Void ? prev + 1 : prev, 0)
+    const emptyCount = board.reduce((prev, current) => current[positionX] === Block.Void ? prev + 1 : prev, 0);
 
     if (local) {
         remove(positionX, positionY);
@@ -38,7 +38,7 @@ function mousedown(event: MouseEvent) {
             type: "REMOVE",
             x: positionX,
             y: positionY,
-            emptyCount: emptyCount
+            emptyCount
         });
     }
 }
@@ -49,7 +49,7 @@ function resolveQueue() {
         drawBoard(board, 0 - count * 0.2);
         drawBoard(resolved, BoardHeight - count * 0.2);
         if (resolved.length * 5 > count) {
-            window.requestAnimationFrame(function() {
+            window.requestAnimationFrame(() => {
                 draw(count + 1);
             });
         } else {
@@ -85,12 +85,9 @@ function resolveQueue() {
 }
 
 function drawBoard(board: Block[][], offset: number) {
-    for (const y in board) {
-        const positionY = Number(y);
-        for (const x in board[positionY]) {
-            const positionX = Number(x);
-
-            drawBlock(positionX, positionY + offset, board[positionY][positionX], 1);
+    for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board[y].length; x++) {
+            drawBlock(x, y + offset, board[y][x], 1);
         }
     }
 }
@@ -105,13 +102,13 @@ export function remove(positionX: number, positionY: number): void {
             return;
         }
 
-        for (const key in positionsList) {
-            for (const position of positionsList[Number(key)]) {
-                drawBlock(position.positionX, position.positionY, position.block, Number(key) / 2 - count / 6);
+        for (let i = 0; i < positionsList.length; i++) {
+            for (const position of positionsList[i]) {
+                drawBlock(position.positionX, position.positionY, position.block, i / 2 - count / 6);
             }
         }
 
-        window.requestAnimationFrame(function() {
+        window.requestAnimationFrame(() => {
             draw(count + 1, positionsList);
         });
     }
@@ -128,10 +125,9 @@ export function remove(positionX: number, positionY: number): void {
 
     drawing = true;
 
-
     const positionsList: Position[][] = [[{
-        positionX: positionX,
-        positionY: positionY,
+        positionX,
+        positionY,
         block: board[positionY][positionX]
     }]];
 
@@ -160,8 +156,8 @@ export function remove(positionX: number, positionY: number): void {
                     }
 
                     positions.push({
-                        positionX: positionX,
-                        positionY: positionY,
+                        positionX,
+                        positionY,
                         block: board[positionY][positionX]
                     });
                 }
@@ -201,7 +197,7 @@ function fall() {
         }
 
         if (floating) {
-            window.requestAnimationFrame(function() {
+            window.requestAnimationFrame(() => {
                 draw();
             });
         } else {
@@ -212,15 +208,15 @@ function fall() {
     }
 
     function calc() {
-        const rotated = board[0].map((_, key) => board.map(row => row[key]).reverse());
-        const gravitated = rotated.map((row) => row.filter(value => value !== 0))
+        const rotated = board[0].map((_, key) => board.map((row) => row[key]).reverse());
+        const gravitated = rotated.map((row) => row.filter((value) => value !== 0))
                                     .map((row) => {
                                         const length = row.length;
                                         row.length = BoardHeight;
                                         row.fill(0, length, BoardHeight);
                                         return row;
                                     });
-        board = gravitated[0].map((_, key) => gravitated.map(row => row[key])).reverse();
+        board = gravitated[0].map((_, key) => gravitated.map((row) => row[key])).reverse();
         drawing = false;
         if (local) {
             newLine();

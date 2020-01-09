@@ -1,4 +1,4 @@
-import {Configuration} from "webpack"
+import {Configuration} from "webpack";
 
 const config: Configuration = {
     mode: "production",
@@ -15,6 +15,6 @@ const config: Configuration = {
     resolve: {
         extensions: [".ts"]
     }
-}
+};
 
 export default config;
