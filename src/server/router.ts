@@ -10,7 +10,7 @@ export default async function listen(port: number) {
         app.use(BodyParser.json());
 
         app.use("/api", api);
-        app.use("/", Express.static(process.cwd() + "/build/client"));
+        app.use("/", Express.static(process.cwd() + "/build"));
 
         app.use((req, res) => {
             res.status(404);
