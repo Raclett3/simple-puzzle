@@ -4,6 +4,7 @@ const config: Configuration = {
     mode: "production",
     entry: "./src/client/script/index.ts",
     output: {
+        path: __dirname + "/build/client",
         filename: "index.js"
     },
     module: {
