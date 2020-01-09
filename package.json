@@ -4,7 +4,8 @@
     "description": "Simple puzzle game",
     "main": "index.js",
     "scripts": {
-        "build": "gulp"
+        "build": "gulp",
+        "start": "ts-node ./src/server/index.ts"
     },
     "author": "Raclett3 <im@s283.net>",
     "license": "MIT",
