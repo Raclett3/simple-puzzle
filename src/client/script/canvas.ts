@@ -5,6 +5,8 @@ export let blockSize = 0;
 let noticeCount: [number, number] = [0, 0];
 const game = document.createElement("canvas");
 const context = game.getContext("2d")!;
+const effect = document.createElement("canvas");
+const effectContext = effect.getContext("2d")!;
 
 export function resize() {
     const clientHeight = wrapper.clientHeight;
@@ -21,12 +23,20 @@ export function resize() {
 
     game.setAttribute("height", String(height));
     game.setAttribute("width", String(width));
+    effect.setAttribute("height", String(height));
+    effect.setAttribute("width", String(width));
 
     wrapper.setAttribute("style", `height: ${height}px; width: ${width}px;`);
 }
 
 export function init() {
     wrapper.appendChild(game);
+    wrapper.appendChild(effect);
+    const loop = () => {
+        drawEffect();
+        requestAnimationFrame(loop);
+    };
+    loop();
     resize();
 }
 
@@ -63,4 +73,48 @@ export function clear() {
 export function notice(next: number, nextNext: number) {
     noticeCount = [next, nextNext];
     drawNotice();
+}
+
+type Effect = {
+    positionX: number,
+    positionY: number,
+    period: number,
+    red: number,
+    green: number,
+    blue: number
+};
+
+let effects: Effect[] = [];
+
+export function addEffect(x: number, y: number, delay: number, red: number, green: number, blue: number) {
+    effects.push({
+        positionX: x * blockSize + blockSize / 2,
+        positionY: y * blockSize + blockSize / 2,
+        period: -delay,
+        red, green, blue
+    });
+}
+
+function drawEffect() {
+    const effectPeriod = 20;
+    effects = effects
+                .map((effect) => {
+                    effect.period++;
+                    return effect;
+                })
+                .filter((effect) => effect.period < effectPeriod);
+
+    effectContext.clearRect(0, 0, blockSize * BoardWidth, blockSize * BoardHeight);
+    for (const effect of effects) {
+        if (effect.period < 0) {
+            continue;
+        }
+
+        const radius = effect.period / effectPeriod * blockSize * 2;
+        const opacity = Math.max(1 - effect.period / effectPeriod, 0);
+        effectContext.beginPath();
+        effectContext.strokeStyle = `rgba(${effect.red}, ${effect.green}, ${effect.blue}, ${opacity})`;
+        effectContext.arc(effect.positionX, effect.positionY, radius, 0, Math.PI * 2);
+        effectContext.stroke();
+    }
 }

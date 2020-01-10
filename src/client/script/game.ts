@@ -1,5 +1,5 @@
 import Block from "../../models/block";
-import {blockSize, clear, drawBlock, notice} from "./canvas";
+import {addEffect, blockSize, clear, drawBlock, notice} from "./canvas";
 import {BoardHeight, BoardWidth, wrapper} from "./index";
 import {countDown, remove as removeLobby, result} from "./lobby";
 import {send} from "./websocket";
@@ -8,6 +8,16 @@ let local: boolean = false;
 let board: Block[][] = [];
 let queue: Block[][] = [];
 let drawing: boolean = false;
+
+const rainbow = [
+    [240,   0,   0],
+    [240, 120,   0],
+    [240, 240,   0],
+    [  0, 240,   0],
+    [  0, 240, 240],
+    [  0,   0, 240],
+    [240,   0, 240]
+];
 
 type Position = {
     positionX: number,
@@ -133,10 +143,24 @@ export function remove(positionX: number, positionY: number): void {
 
     while (true) {
         const positions: Position[] = [];
+        const rainbowColor = rainbow[(positionsList.length - 1) % 7];
 
         for (const position of positionsList[positionsList.length - 1]) {
             const block = board[position.positionY][position.positionX];
+
             board[position.positionY][position.positionX] = Block.Void;
+
+            const delay = positionsList.length * 3;
+            if (block !== Block.Void) {
+                addEffect(
+                    position.positionX,
+                    position.positionY,
+                    delay,
+                    rainbowColor[0],
+                    rainbowColor[1],
+                    rainbowColor[2]);
+            }
+
             if (block !== Block.Bomb) {
                 continue;
             }
