@@ -298,6 +298,19 @@ export function removeBlock(
         }
     }
 
+    let sum = 0;
+    const obstacles: number[] = [];
+    for (const obstacle of match.obstacles) {
+        if (sum + obstacle > 8) {
+            obstacles.push(8 - sum);
+            break;
+        } else {
+            obstacles.push(obstacle);
+        }
+        sum += obstacle;
+    }
+    match.obstacles = obstacles;
+
     if (match.obstacles.length === 0) {
         match.obstaclesSide = null;
     }
