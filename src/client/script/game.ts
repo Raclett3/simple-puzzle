@@ -69,10 +69,6 @@ function resolveQueue() {
     }
 
     function calc() {
-        if (queue.length > 0) {
-            draw(0);
-            return;
-        }
         drawing = false;
         board.push(...resolved);
         board.splice(0, resolved.length);
@@ -82,13 +78,19 @@ function resolveQueue() {
         ) {
             result("GAME OVER");
         }
+        if (queue.length > 0) {
+            resolved = queue;
+            queue = [];
+            drawing = true;
+            draw(0);
+        }
     }
 
     if (drawing) {
         return;
     }
 
-    const resolved = queue;
+    let resolved = queue;
     queue = [];
     drawing = true;
     draw(0);
