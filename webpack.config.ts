@@ -14,15 +14,11 @@ const config: Configuration = {
                 use: "ts-loader"
             },
             {
-                test: /\.(png|html|ico)$/,
+                test: /\.(png|html|ico|css)$/,
                 loader: "file-loader",
                 options: {
                     name: "[name].[ext]"
                 }
-            },
-            {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader"]
             }
         ]
     },
